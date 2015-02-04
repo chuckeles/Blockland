@@ -1,5 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
+using System;
 
 namespace Blockland {
 
@@ -22,13 +24,16 @@ namespace Blockland {
 
       BufferObject vertex = new BufferObject(BufferObject.Type.Vertex);
       float[] vertexData = {
-                             -.5f, -.5f, 0f,
-                              .5f, -.5f, 0f,
-                              .5f,  .5f, 0f,
-                             -.5f,  .5f, 0f
+                             -1f, -1f, -10f,
+                              1f, -1f, -10f,
+                              1f,  1f, -10f,
+                             -1f,  1f, -10f
                            };
       vertex.CopyData(vertexData, true);
       shader.Attribute("inPosition", 3, 0, 0);
+
+      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 2, (float)window.Width / window.Height, .1f, 100f);
+      shader.Uniform("projection", ref projection);
 
       while (window.Open) {
         window.Clear();

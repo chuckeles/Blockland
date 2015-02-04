@@ -41,7 +41,7 @@ namespace Blockland {
       GL.UseProgram(mId);
     }
 
-    public void UniformMatrix4(string uniformName, ref Matrix4 matrix) {
+    public void Uniform(string uniformName, ref Matrix4 matrix) {
       int uniform = GL.GetUniformLocation(mId, uniformName);
       GL.UniformMatrix4(uniform, false, ref matrix);
     }
