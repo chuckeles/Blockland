@@ -42,11 +42,11 @@ namespace Blockland {
       Window.Instance.DrawTriangles(mElements.Length);
     }
 
-    public void Generate(int chunkX, int chunkY, int chunkZ, float noiseScale = 10f) {
+    public void Generate(int chunkX, int chunkY, int chunkZ, float noiseScale = 10f, float noiseScaleHeight = 20f) {
       for (int x = 0; x < Size; ++x)
         for (int y = 0; y < Size; ++y)
           for (int z = 0; z < Size; ++z)
-            if (Noise.Generate((x + chunkX * Chunk.Size) / noiseScale, (y + chunkY * Chunk.Size) / noiseScale, (z + chunkZ * Chunk.Size) / noiseScale) > 0)
+            if (Noise.Generate((x + chunkX * Chunk.Size) / noiseScale, (y + chunkY * Chunk.Size) / noiseScaleHeight, (z + chunkZ * Chunk.Size) / noiseScale) - ((y + chunkY * Chunk.Size - 32) / 16f) > 0)
               mBlocks.Add(new Block.Position(x, y, z), new Block());
     }
 

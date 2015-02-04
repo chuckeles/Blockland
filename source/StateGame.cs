@@ -12,15 +12,18 @@ namespace Blockland {
     public override void Start() {
       base.Start();
 
+      (mCamera["Camera"] as Camera).Speed = 30f;
+
       mWindow.NativeWindow.KeyDown += OnEscape;
 
-      int chunks = 3;
+      int height = 4;
+      int size = 8;
 
-      for (int x = 0; x < chunks; ++x)
-        for (int y = 0; y < chunks; ++y)
-          for (int z = 0; z < chunks; ++z) {
+      for (int x = 0; x < size; ++x)
+        for (int y = 0; y < height; ++y)
+          for (int z = 0; z < size; ++z) {
             Chunk chunk = new Chunk();
-            chunk.Generate(x, y, z, 20f);
+            chunk.Generate(x, y, z, 40f, 100f);
             chunk.Build();
 
             GameObject chunkObject = new GameObject();

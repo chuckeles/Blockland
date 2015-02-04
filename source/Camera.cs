@@ -8,8 +8,8 @@ namespace Blockland {
 
     public Camera(float cameraSpeed = 10f, float cameraRotateSpeed = 0.003f)
       : base("Camera") {
-      mSpeed = cameraSpeed;
-      mRotateSpeed = cameraRotateSpeed;
+      Speed = cameraSpeed;
+      RotateSpeed = cameraRotateSpeed;
 
       mMousePrevious = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
     }
@@ -32,15 +32,15 @@ namespace Blockland {
       int deltaY = (keyState[Key.Space] ? 1 : 0) - (keyState[Key.ShiftLeft] ? 1 : 0);
       int deltaZ = (keyState[Key.S] ? 1 : 0) - (keyState[Key.W] ? 1 : 0);
 
-      transform.Move(deltaX * deltaTime * mSpeed, 0f, deltaZ * deltaTime * mSpeed);
-      transform.Move(0f, deltaY * deltaTime * mSpeed, 0f, Transform.Space.Global);
+      transform.Move(deltaX * deltaTime * Speed, 0f, deltaZ * deltaTime * Speed);
+      transform.Move(0f, deltaY * deltaTime * Speed, 0f, Transform.Space.Global);
 
       if (MouseLock) {
         float mouseDeltaX = mouseState.X - mMousePrevious.X;
         float mouseDeltaY = mouseState.Y - mMousePrevious.Y;
 
-        transform.Rotate(Vector3.UnitY, -mouseDeltaX * mRotateSpeed, Transform.Space.Global);
-        transform.Rotate(Vector3.UnitX, -mouseDeltaY * mRotateSpeed);
+        transform.Rotate(Vector3.UnitY, -mouseDeltaX * RotateSpeed, Transform.Space.Global);
+        transform.Rotate(Vector3.UnitX, -mouseDeltaY * RotateSpeed);
 
         Window.Instance.CenterMouse();
       }
@@ -49,8 +49,8 @@ namespace Blockland {
       mMousePrevious.Y = mouseState.Y;
     }
 
-    private float mSpeed;
-    private float mRotateSpeed;
+    public float Speed;
+    public float RotateSpeed;
 
     private Vector2 mMousePrevious;
 
