@@ -22,7 +22,7 @@ namespace Blockland {
       mWindow.Visible = true;
       mWindow.WindowBorder = WindowBorder.Fixed;
 
-      GL.Enable(EnableCap.CullFace);
+      //GL.Enable(EnableCap.CullFace);
       GL.ClearColor(0f, 0f, 0f, 0f);
 
       mInstance = this;

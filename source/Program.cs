@@ -29,19 +29,44 @@ namespace Blockland {
                              -1f, -1f, -10f,
                               1f, -1f, -10f,
                               1f,  1f, -10f,
-                             -1f,  1f, -10f
+                             -1f,  1f, -10f,
+                              1f, -1f, -11f,
+                             -1f, -1f, -11f,
+                             -1f,  1f, -11f,
+                              1f,  1f, -11f,
                            };
       vertex.CopyData(vertexData, true);
       shader.Attribute("inPosition", 3, 0, 0);
 
       BufferObject element = new BufferObject(BufferObject.Type.Element);
       uint[] elementData = {
+                             // front
                              0, 1, 2,
-                             0, 2, 3
+                             0, 2, 3,
+
+                             // back
+                             4, 5, 6,
+                             4, 6, 7,
+
+                             // right
+                             1, 4, 7,
+                             1, 7, 2,
+
+                             // left
+                             5, 0, 3,
+                             5, 3, 6,
+
+                             // top
+                             3, 2, 7,
+                             3, 7, 6,
+
+                             // bottom
+                             1, 0, 5,
+                             1, 5, 4
                            };
       element.CopyData(elementData, true);
 
-      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 2, (float)window.Width / window.Height, .1f, 100f);
+      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)window.Width / window.Height, .1f, 100f);
       shader.Uniform("projection", ref projection);
 
       Transform cameraTransform = new Transform();
@@ -49,7 +74,7 @@ namespace Blockland {
       camera.AddComponent(cameraTransform);
       camera.AddComponent(new Camera());
 
-      float cameraSpeed = 2f;
+      float cameraSpeed = 10f;
 
       Stopwatch clock = Stopwatch.StartNew();
       float lastTime = 0f;
@@ -62,14 +87,14 @@ namespace Blockland {
         window.Clear();
 
         int deltaX = (state[Key.D] ? 1 : 0) - (state[Key.A] ? 1 : 0);
-        int deltaY = (state[Key.W] ? 1 : 0) - (state[Key.S] ? 1 : 0);
+        int deltaY = (state[Key.S] ? 1 : 0) - (state[Key.W] ? 1 : 0);
 
-        cameraTransform.Move(deltaX * deltaTime * cameraSpeed, deltaY * deltaTime * cameraSpeed, 0f);
+        cameraTransform.Move(deltaX * deltaTime * cameraSpeed, 0f, deltaY * deltaTime * cameraSpeed);
 
         Matrix4 view = cameraTransform.Matrix.Inverted();
         shader.Uniform("view", ref view);
 
-        GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedInt, 0);
+        GL.DrawElements(BeginMode.Triangles, 38, DrawElementsType.UnsignedInt, 0);
 
         window.Display();
 
