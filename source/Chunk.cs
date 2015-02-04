@@ -33,9 +33,11 @@ namespace Blockland {
       mVertices = new BufferObject(BufferObject.Type.Vertex);
       mElements = new BufferObject(BufferObject.Type.Element);
 
-      mBlocks.Add(new Block.Position(0, 0, 0), new Block());
-      mBlocks.Add(new Block.Position(7, 7, 7), new Block());
-      mBlocks.Add(new Block.Position(15, 15, 15), new Block());
+      for (int x = 0; x < Size; ++x)
+        for (int y = 0; y < Size; ++y)
+          for (int z = 0; z < Size; ++z)
+            if (Random.Value < 0.4)
+              mBlocks.Add(new Block.Position(x, y, z), new Block());
     }
 
     public override void Attached(GameObject gameObject) {

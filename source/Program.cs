@@ -49,7 +49,7 @@ namespace Blockland {
       };
 
       // move camera back
-      cameraTransform.Move(0f, 0f, 10f, Transform.Space.Global);
+      cameraTransform.Move(0f, 20f, 40f, Transform.Space.Global);
 
       // clock
       Stopwatch clock = Stopwatch.StartNew();
