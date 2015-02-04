@@ -14,31 +14,23 @@ namespace Blockland {
 
       mWindow.NativeWindow.KeyDown += OnEscape;
 
-      // create chunk
-      Chunk chunk = new Chunk();
-      chunk.Generate(0, 0, 0);
-      chunk.Build();
+      int chunks = 3;
 
-      // create game object
-      GameObject chunkObject = new GameObject();
-      chunkObject.AddComponent(chunk);
+      for (int x = 0; x < chunks; ++x)
+        for (int y = 0; y < chunks; ++y)
+          for (int z = 0; z < chunks; ++z) {
+            Chunk chunk = new Chunk();
+            chunk.Generate(x, y, z, 20f);
+            chunk.Build();
 
-      AddGameObject(chunkObject);
+            GameObject chunkObject = new GameObject();
+            chunkObject.AddComponent(chunk);
 
-      // create second chunk
-      Chunk chunk2 = new Chunk();
-      chunk2.Generate(1, 0, 0);
-      chunk2.Build();
+            AddGameObject(chunkObject);
 
-      // create game object
-      GameObject chunkObject2 = new GameObject();
-      chunkObject2.AddComponent(chunk2);
-
-      AddGameObject(chunkObject2);
-
-      // move second chunk
-      Transform transform = chunkObject2["Transform"] as Transform;
-      transform.Move(Block.Size * Chunk.Size, 0f, 0f);
+            Transform transform = chunkObject["Transform"] as Transform;
+            transform.Move(x * Block.Size * Chunk.Size, y * Block.Size * Chunk.Size, z * Block.Size * Chunk.Size);
+          }
     }
 
     public void OnEscape(object sender, KeyboardKeyEventArgs e) {
