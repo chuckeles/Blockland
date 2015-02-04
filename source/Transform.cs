@@ -37,6 +37,21 @@ namespace Blockland {
       return this;
     }
 
+    public Transform Rotate(Vector3 axis, float angle, Space space = Space.Local) {
+      return Rotate(Quaternion.FromAxisAngle(axis, angle), space);
+    }
+
+    public Transform Rotate(Quaternion delta, Space space = Space.Local) {
+      delta.Normalize();
+
+      if (space == Space.Local)
+        Rotation = Rotation * delta;
+      else
+        Rotation = delta * Rotation;
+
+      return this;
+    }
+
     public Matrix4 Matrix {
       get {
         Matrix4 pos = Matrix4.CreateTranslation(Position);
