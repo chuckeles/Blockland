@@ -24,6 +24,7 @@ namespace Blockland {
       mWindow.WindowBorder = WindowBorder.Fixed;
 
       GL.Enable(EnableCap.CullFace);
+      GL.Enable(EnableCap.DepthTest);
       GL.ClearColor(0f, 0f, 0f, 0f);
 
       mInstance = this;

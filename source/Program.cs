@@ -23,13 +23,15 @@ namespace Blockland {
       shader.Use();
 
       // projection matrix
-      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)window.Width / window.Height, .1f, 100f);
+      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)window.Width / window.Height, .1f, 1000f);
       shader.Uniform("Projection", ref projection);
 
       // chunk
       Chunk chunk = new Chunk();
       GameObject chunkObject = new GameObject();
       chunkObject.AddComponent(chunk);
+
+      chunk.Build(shader);
 
       // camera object
       Transform cameraTransform = new Transform();
@@ -61,8 +63,9 @@ namespace Blockland {
 
         window.Clear();
 
-        // update camera
+        // update
         cameraObject.Update(deltaTime);
+        chunkObject.Update(deltaTime);
 
         // center mouse
         if (camera.MouseLock)
@@ -73,7 +76,8 @@ namespace Blockland {
         shader.Uniform("View", ref view);
 
         // rendering
-        // GL.DrawElements(BeginMode.Triangles, 38, DrawElementsType.UnsignedInt, 0);
+        cameraObject.Draw();
+        chunkObject.Draw();
 
         window.Display();
 
