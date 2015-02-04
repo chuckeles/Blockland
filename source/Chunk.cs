@@ -28,24 +28,12 @@ namespace Blockland {
 
     public Chunk()
       : base("Chunk") {
-      mBlocks = new Dictionary<Block.Position, Block>();
-
-      mArrayObject = new ArrayObject();
-      mVertices = new BufferObject(BufferObject.Type.Vertex);
-      mElements = new BufferObject(BufferObject.Type.Element);
-
-      float noiseScale = 10f;
-
-      for (int x = 0; x < Size; ++x)
-        for (int y = 0; y < Size; ++y)
-          for (int z = 0; z < Size; ++z)
-            if (Noise.Generate(x / noiseScale, y / noiseScale, z / noiseScale) > 0)
-              mBlocks.Add(new Block.Position(x, y, z), new Block());
     }
 
     public override void Attached(GameObject gameObject) {
       base.Attached(gameObject);
 
+      gameObject.EnsureTransform();
       gameObject.OnDraw += Draw;
     }
 
@@ -54,7 +42,15 @@ namespace Blockland {
       Window.Instance.DrawTriangles(mElements.Length);
     }
 
-    public void Build(ShaderProgram shader) {
+    public void Generate(float noiseScale = 10f) {
+      for (int x = 0; x < Size; ++x)
+        for (int y = 0; y < Size; ++y)
+          for (int z = 0; z < Size; ++z)
+            if (Noise.Generate(x / noiseScale, y / noiseScale, z / noiseScale) > 0)
+              mBlocks.Add(new Block.Position(x, y, z), new Block());
+    }
+
+    public void Build() {
       mArrayObject.Bind();
 
       ArrayList vertexData = new ArrayList();
@@ -193,17 +189,17 @@ namespace Blockland {
       mVertices.CopyData(vertices, true);
       mElements.CopyData(elements, true);
 
-      shader.Attribute("inPosition", 3, sizeof(float) * 6, 0);
-      shader.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
+      ShaderProgram.Current.Attribute("inPosition", 3, sizeof(float) * 6, 0);
+      ShaderProgram.Current.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
     }
 
     public static int Size = 16;
 
-    private Dictionary<Block.Position, Block> mBlocks;
+    private Dictionary<Block.Position, Block> mBlocks = new Dictionary<Block.Position, Block>();
 
-    private ArrayObject mArrayObject;
-    private BufferObject mVertices;
-    private BufferObject mElements;
+    private ArrayObject mArrayObject = new ArrayObject();
+    private BufferObject mVertices = new BufferObject(BufferObject.Type.Vertex);
+    private BufferObject mElements = new BufferObject(BufferObject.Type.Element);
 
   }
 
