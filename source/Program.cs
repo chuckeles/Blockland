@@ -28,14 +28,41 @@ namespace Blockland {
 
       BufferObject vertex = new BufferObject(BufferObject.Type.Vertex);
       float[] vertexData = {
-                             -1f, -1f, -10f,
-                              1f, -1f, -10f,
-                              1f,  1f, -10f,
-                             -1f,  1f, -10f,
-                              1f, -1f, -12f,
-                             -1f, -1f, -12f,
-                             -1f,  1f, -12f,
-                              1f,  1f, -12f,
+                             // front
+                             -1f, -1f,  1f,
+                              1f, -1f,  1f,
+                              1f,  1f,  1f,
+                             -1f,  1f,  1f,
+
+                             // back
+                              1f, -1f, -1f,
+                             -1f, -1f, -1f,
+                             -1f,  1f, -1f,
+                              1f,  1f, -1f,
+
+                              // right
+                              1f, -1f,  1f,
+                              1f, -1f, -1f,
+                              1f,  1f, -1f,
+                              1f,  1f,  1f,
+
+                              // left
+                             -1f, -1f, -1f,
+                             -1f, -1f,  1f,
+                             -1f,  1f,  1f,
+                             -1f,  1f, -1f,
+
+                             // top
+                             -1f,  1f,  1f,
+                              1f,  1f,  1f,
+                              1f,  1f, -1f,
+                             -1f,  1f, -1f,
+
+                             // bottom
+                              1f, -1f,  1f,
+                             -1f, -1f,  1f,
+                             -1f, -1f, -1f,
+                              1f, -1f, -1f
                            };
       vertex.CopyData(vertexData, true);
       shader.Attribute("inPosition", 3, 0, 0);
@@ -51,20 +78,20 @@ namespace Blockland {
                              4, 6, 7,
 
                              // right
-                             1, 4, 7,
-                             1, 7, 2,
+                             8, 9, 10,
+                             8, 10, 11,
 
                              // left
-                             5, 0, 3,
-                             5, 3, 6,
+                             12, 13, 14,
+                             12, 14, 15,
 
                              // top
-                             3, 2, 7,
-                             3, 7, 6,
+                             16, 17, 18,
+                             16, 18, 19,
 
                              // bottom
-                             1, 0, 5,
-                             1, 5, 4
+                             20, 21, 22,
+                             20, 22, 23
                            };
       element.CopyData(elementData, true);
 
@@ -92,6 +119,9 @@ namespace Blockland {
 
       // previous mouse position
       Vector2 mousePrevious = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+
+      // move camera back
+      cameraTransform.Move(0f, 0f, 10f, Transform.Space.Global);
 
       // clock
       Stopwatch clock = Stopwatch.StartNew();
