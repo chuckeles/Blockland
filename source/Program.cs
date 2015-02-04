@@ -29,43 +29,44 @@ namespace Blockland {
       BufferObject vertex = new BufferObject(BufferObject.Type.Vertex);
       float[] vertexData = {
                              // front
-                             -1f, -1f,  1f,
-                              1f, -1f,  1f,
-                              1f,  1f,  1f,
-                             -1f,  1f,  1f,
+                             -1f, -1f,  1f,  0f,  0f,  1f,
+                              1f, -1f,  1f,  0f,  0f,  1f,
+                              1f,  1f,  1f,  0f,  0f,  1f,
+                             -1f,  1f,  1f,  0f,  0f,  1f,
 
                              // back
-                              1f, -1f, -1f,
-                             -1f, -1f, -1f,
-                             -1f,  1f, -1f,
-                              1f,  1f, -1f,
+                              1f, -1f, -1f,  0f,  0f, -1f,
+                             -1f, -1f, -1f,  0f,  0f, -1f,
+                             -1f,  1f, -1f,  0f,  0f, -1f,
+                              1f,  1f, -1f,  0f,  0f, -1f,
 
                               // right
-                              1f, -1f,  1f,
-                              1f, -1f, -1f,
-                              1f,  1f, -1f,
-                              1f,  1f,  1f,
+                              1f, -1f,  1f,  1f,  0f,  0f,
+                              1f, -1f, -1f,  1f,  0f,  0f,
+                              1f,  1f, -1f,  1f,  0f,  0f,
+                              1f,  1f,  1f,  1f,  0f,  0f,
 
                               // left
-                             -1f, -1f, -1f,
-                             -1f, -1f,  1f,
-                             -1f,  1f,  1f,
-                             -1f,  1f, -1f,
+                             -1f, -1f, -1f, -1f,  0f,  0f,
+                             -1f, -1f,  1f, -1f,  0f,  0f,
+                             -1f,  1f,  1f, -1f,  0f,  0f,
+                             -1f,  1f, -1f, -1f,  0f,  0f,
 
                              // top
-                             -1f,  1f,  1f,
-                              1f,  1f,  1f,
-                              1f,  1f, -1f,
-                             -1f,  1f, -1f,
+                             -1f,  1f,  1f,  0f,  1f,  0f,
+                              1f,  1f,  1f,  0f,  1f,  0f,
+                              1f,  1f, -1f,  0f,  1f,  0f,
+                             -1f,  1f, -1f,  0f,  1f,  0f,
 
                              // bottom
-                              1f, -1f,  1f,
-                             -1f, -1f,  1f,
-                             -1f, -1f, -1f,
-                              1f, -1f, -1f
+                              1f, -1f,  1f,  0f, -1f,  0f,
+                             -1f, -1f,  1f,  0f, -1f,  0f,
+                             -1f, -1f, -1f,  0f, -1f,  0f,
+                              1f, -1f, -1f,  0f, -1f,  0f
                            };
       vertex.CopyData(vertexData, true);
-      shader.Attribute("inPosition", 3, 0, 0);
+      shader.Attribute("inPosition", 3, sizeof(float) * 6, 0);
+      shader.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
 
       BufferObject element = new BufferObject(BufferObject.Type.Element);
       uint[] elementData = {
@@ -97,7 +98,7 @@ namespace Blockland {
 
       // projection matrix
       Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)window.Width / window.Height, .1f, 100f);
-      shader.Uniform("projection", ref projection);
+      shader.Uniform("Projection", ref projection);
 
       // camera object
       Transform cameraTransform = new Transform();
@@ -161,7 +162,7 @@ namespace Blockland {
 
         // view matrix
         Matrix4 view = cameraTransform.Matrix.Inverted();
-        shader.Uniform("view", ref view);
+        shader.Uniform("View", ref view);
 
         // rendering
         GL.DrawElements(BeginMode.Triangles, 38, DrawElementsType.UnsignedInt, 0);
