@@ -1,8 +1,6 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Input;
+﻿using OpenTK.Graphics.OpenGL4;
+using SimplexNoise;
 using System;
-using System.Diagnostics;
 
 namespace Blockland {
 
@@ -19,6 +17,9 @@ namespace Blockland {
       shader.Attach(fragmentShader);
       shader.Link();
       shader.Use();
+
+      System.Random random = new System.Random();
+      random.NextBytes(Noise.perm);
 
       State state = new StatePrepare(window);
       state.Start();

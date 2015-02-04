@@ -16,7 +16,7 @@ namespace Blockland {
 
       // create chunk
       Chunk chunk = new Chunk();
-      chunk.Generate();
+      chunk.Generate(0, 0, 0);
       chunk.Build();
 
       // create game object
@@ -27,7 +27,7 @@ namespace Blockland {
 
       // create second chunk
       Chunk chunk2 = new Chunk();
-      chunk2.Generate();
+      chunk2.Generate(1, 0, 0);
       chunk2.Build();
 
       // create game object
