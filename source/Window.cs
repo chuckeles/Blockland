@@ -48,6 +48,10 @@ namespace Blockland {
       mContext.SwapBuffers();
     }
 
+    public void DrawTriangles(int count) {
+      GL.DrawElements(BeginMode.Triangles, count, DrawElementsType.UnsignedInt, 0);
+    }
+
     public void CenterMouse() {
       Mouse.SetPosition(mWindow.X + mWidth / 2, mWindow.Y + mHeight / 2);
     }

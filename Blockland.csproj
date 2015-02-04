@@ -77,6 +77,7 @@
     <Compile Include="source\Random.cs" />
     <Compile Include="source\Shader.cs" />
     <Compile Include="source\ShaderProgram.cs" />
+    <Compile Include="source\State.cs" />
     <Compile Include="source\Transform.cs" />
     <Compile Include="source\Window.cs" />
   </ItemGroup>

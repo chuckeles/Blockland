@@ -51,7 +51,7 @@ namespace Blockland {
 
     public void Draw() {
       mArrayObject.Bind();
-      GL.DrawElements(BeginMode.Triangles, mElements.Length, DrawElementsType.UnsignedInt, 0);
+      Window.Instance.DrawTriangles(mElements.Length);
     }
 
     public void Build(ShaderProgram shader) {
