@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Input;
 using System;
 
 namespace Blockland {
@@ -22,7 +23,7 @@ namespace Blockland {
       mWindow.Visible = true;
       mWindow.WindowBorder = WindowBorder.Fixed;
 
-      //GL.Enable(EnableCap.CullFace);
+      GL.Enable(EnableCap.CullFace);
       GL.ClearColor(0f, 0f, 0f, 0f);
 
       mInstance = this;
@@ -46,6 +47,19 @@ namespace Blockland {
       mContext.SwapBuffers();
     }
 
+    public void CenterMouse() {
+      Mouse.SetPosition(mWindow.X + mWidth / 2, mWindow.Y + mHeight / 2);
+    }
+
+    public bool MouseVisible {
+      get {
+        return mWindow.CursorVisible;
+      }
+      set {
+        mWindow.CursorVisible = value;
+      }
+    }
+
     public bool Open {
       get {
         return mWindow.Exists;
@@ -61,6 +75,12 @@ namespace Blockland {
     public uint Height {
       get {
         return mHeight;
+      }
+    }
+
+    public NativeWindow NativeWindow {
+      get {
+        return mWindow;
       }
     }
 

@@ -57,7 +57,7 @@ namespace Blockland {
         Matrix4 pos = Matrix4.CreateTranslation(Position);
         Matrix4 rot = Matrix4.CreateFromQuaternion(Rotation);
 
-        return pos * rot;
+        return rot * pos;
       }
     }
 
