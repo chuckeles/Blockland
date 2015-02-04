@@ -197,7 +197,7 @@ namespace Blockland {
       shader.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
     }
 
-    public static int Size = 32;
+    public static int Size = 16;
 
     private Dictionary<Block.Position, Block> mBlocks;
 
