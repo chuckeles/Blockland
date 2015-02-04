@@ -36,7 +36,7 @@ namespace Blockland {
       for (int x = 0; x < Size; ++x)
         for (int y = 0; y < Size; ++y)
           for (int z = 0; z < Size; ++z)
-            if (Random.Value < 0.4)
+            if (Random.Value < 0.995)
               mBlocks.Add(new Block.Position(x, y, z), new Block());
     }
 
@@ -65,111 +65,123 @@ namespace Blockland {
 
         // front
 
-        float[] frontVertices = {
+        if (!mBlocks.ContainsKey(new Block.Position(block.Key.X, block.Key.Y, block.Key.Z + 1))) {
+          float[] frontVertices = {
                                   x, y, z+Block.Size,                       0f, 0f, 1f,
                                   x+Block.Size, y, z+Block.Size,            0f, 0f, 1f,
                                   x+Block.Size, y+Block.Size, z+Block.Size, 0f, 0f, 1f,
                                   x, y+Block.Size, z+Block.Size,            0f, 0f, 1f
                                 };
-        vertexData.AddRange(frontVertices);
+          vertexData.AddRange(frontVertices);
 
-        uint[] frontElements = {
+          uint[] frontElements = {
                                  count, count+1, count+2,
                                  count, count+2, count+3
                                };
 
-        elementData.AddRange(frontElements);
-        count += 4;
+          elementData.AddRange(frontElements);
+          count += 4;
+        }
 
         // back
 
-        float[] backVertices = {
+        if (!mBlocks.ContainsKey(new Block.Position(block.Key.X, block.Key.Y, block.Key.Z - 1))) {
+          float[] backVertices = {
                                   x+Block.Size, y, z,            0f, 0f, -1f,
                                   x, y, z,                       0f, 0f, -1f,
                                   x, y+Block.Size, z,            0f, 0f, -1f,
                                   x+Block.Size, y+Block.Size, z, 0f, 0f, -1f
                                 };
-        vertexData.AddRange(backVertices);
+          vertexData.AddRange(backVertices);
 
-        uint[] backElements = {
+          uint[] backElements = {
                                  count, count+1, count+2,
                                  count, count+2, count+3
                                };
 
-        elementData.AddRange(backElements);
-        count += 4;
+          elementData.AddRange(backElements);
+          count += 4;
+        }
 
         // right
 
-        float[] rightVertices = {
+        if (!mBlocks.ContainsKey(new Block.Position(block.Key.X + 1, block.Key.Y, block.Key.Z))) {
+          float[] rightVertices = {
                                   x+Block.Size, y, z+Block.Size,            1f, 0f, 0f,
                                   x+Block.Size, y, z,                       1f, 0f, 0f,
                                   x+Block.Size, y+Block.Size, z,            1f, 0f, 0f,
                                   x+Block.Size, y+Block.Size, z+Block.Size, 1f, 0f, 0f
                                 };
-        vertexData.AddRange(rightVertices);
+          vertexData.AddRange(rightVertices);
 
-        uint[] rightElements = {
+          uint[] rightElements = {
                                  count, count+1, count+2,
                                  count, count+2, count+3
                                };
 
-        elementData.AddRange(rightElements);
-        count += 4;
+          elementData.AddRange(rightElements);
+          count += 4;
+        }
 
         // left
 
-        float[] leftVertices = {
+        if (!mBlocks.ContainsKey(new Block.Position(block.Key.X - 1, block.Key.Y, block.Key.Z))) {
+          float[] leftVertices = {
                                   x, y, z,                       -1f, 0f, 0f,
                                   x, y, z+Block.Size,            -1f, 0f, 0f,
                                   x, y+Block.Size, z+Block.Size, -1f, 0f, 0f,
                                   x, y+Block.Size, z,            -1f, 0f, 0f
                                 };
-        vertexData.AddRange(leftVertices);
+          vertexData.AddRange(leftVertices);
 
-        uint[] leftElements = {
+          uint[] leftElements = {
                                  count, count+1, count+2,
                                  count, count+2, count+3
                                };
 
-        elementData.AddRange(leftElements);
-        count += 4;
+          elementData.AddRange(leftElements);
+          count += 4;
+        }
 
         // top
 
-        float[] topVertices = {
+        if (!mBlocks.ContainsKey(new Block.Position(block.Key.X, block.Key.Y + 1, block.Key.Z))) {
+          float[] topVertices = {
                                   x, y+Block.Size, z+Block.Size,            0f, 1f, 0f,
                                   x+Block.Size, y+Block.Size, z+Block.Size, 0f, 1f, 0f,
                                   x+Block.Size, y+Block.Size, z,            0f, 1f, 0f,
                                   x, y+Block.Size, z,                       0f, 1f, 0f
                                 };
-        vertexData.AddRange(topVertices);
+          vertexData.AddRange(topVertices);
 
-        uint[] topElements = {
+          uint[] topElements = {
                                  count, count+1, count+2,
                                  count, count+2, count+3
                                };
 
-        elementData.AddRange(topElements);
-        count += 4;
+          elementData.AddRange(topElements);
+          count += 4;
+        }
 
         // bottom
 
-        float[] bottomVertices = {
+        if (!mBlocks.ContainsKey(new Block.Position(block.Key.X, block.Key.Y - 1, block.Key.Z))) {
+          float[] bottomVertices = {
                                   x+Block.Size, y, z+Block.Size, 0f, -1f, 0f,
                                   x, y, z+Block.Size,            0f, -1f, 0f,
                                   x, y, z,                       0f, -1f, 0f,
                                   x+Block.Size, y, z,            0f, -1f, 0f
                                 };
-        vertexData.AddRange(bottomVertices);
+          vertexData.AddRange(bottomVertices);
 
-        uint[] bottomElements = {
+          uint[] bottomElements = {
                                  count, count+1, count+2,
                                  count, count+2, count+3
                                };
 
-        elementData.AddRange(bottomElements);
-        count += 4;
+          elementData.AddRange(bottomElements);
+          count += 4;
+        }
       }
 
       float[] vertices = vertexData.ToArray(typeof(float)) as float[];
