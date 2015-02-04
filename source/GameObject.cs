@@ -32,6 +32,11 @@ namespace Blockland {
       mComponents.Remove(name);
     }
 
+    public void EnsureTransform() {
+      if (!HasComponent("Transform"))
+        AddComponent(new Transform());
+    }
+
     public void Update(float deltaTime) {
       if (OnUpdate != null)
         OnUpdate(deltaTime);

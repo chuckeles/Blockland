@@ -43,8 +43,18 @@ namespace Blockland {
       Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 2, (float)window.Width / window.Height, .1f, 100f);
       shader.Uniform("projection", ref projection);
 
+      Transform cameraTransform = new Transform();
+      GameObject camera = new GameObject();
+      camera.AddComponent(cameraTransform);
+      camera.AddComponent(new Camera());
+
+      cameraTransform.Move(.5f, 0f, 0f);
+
       while (window.Open) {
         window.Clear();
+
+        Matrix4 view = cameraTransform.Matrix.Inverted();
+        shader.Uniform("view", ref view);
 
         GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedInt, 0);
 

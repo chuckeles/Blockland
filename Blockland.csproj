@@ -72,6 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="source\ArrayObject.cs" />
     <Compile Include="source\BufferObject.cs" />
+    <Compile Include="source\Camera.cs" />
     <Compile Include="source\Component.cs" />
     <Compile Include="source\GameObject.cs" />
     <Compile Include="source\Program.cs" />
