@@ -41,6 +41,8 @@ namespace Blockland {
 
         transform.Rotate(Vector3.UnitY, -mouseDeltaX * mRotateSpeed, Transform.Space.Global);
         transform.Rotate(Vector3.UnitX, -mouseDeltaY * mRotateSpeed);
+
+        Window.Instance.CenterMouse();
       }
 
       mMousePrevious.X = mouseState.X;

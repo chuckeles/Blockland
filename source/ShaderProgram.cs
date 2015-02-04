@@ -40,7 +40,7 @@ namespace Blockland {
     public void Use() {
       GL.UseProgram(mId);
 
-      mInstance = this;
+      mCurrent = this;
     }
 
     public void Uniform(string uniformName, ref Matrix4 matrix) {
@@ -71,15 +71,15 @@ namespace Blockland {
       }
     }
 
-    public static ShaderProgram Instance {
+    public static ShaderProgram Current {
       get {
-        return mInstance;
+        return mCurrent;
       }
     }
 
     private int mId = 0;
 
-    private static ShaderProgram mInstance;
+    private static ShaderProgram mCurrent;
 
   }
 
