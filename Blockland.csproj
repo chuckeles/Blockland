@@ -78,6 +78,8 @@
     <Compile Include="source\Shader.cs" />
     <Compile Include="source\ShaderProgram.cs" />
     <Compile Include="source\State.cs" />
+    <Compile Include="source\StateGame.cs" />
+    <Compile Include="source\StatePrepare.cs" />
     <Compile Include="source\Transform.cs" />
     <Compile Include="source\Window.cs" />
   </ItemGroup>

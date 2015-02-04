@@ -20,21 +20,14 @@ namespace Blockland {
       shader.Link();
       shader.Use();
 
-      State state = new State(window);
+      State state = new StatePrepare(window);
       state.Start();
 
-      // chunk
-      Chunk chunk = new Chunk();
-      GameObject chunkObject = new GameObject();
-      chunkObject.AddComponent(chunk);
-
-      chunk.Build(shader);
-
-      while (window.Open) {
-        state.Frame();
+      while (State.Current != null) {
+        State.Current.BeginFrame();
+        State.Current.Frame();
+        State.Current.EndFrame();
       }
-
-      state.End();
 
       GC.KeepAlive(fragmentShader);
       GC.KeepAlive(vertexShader);

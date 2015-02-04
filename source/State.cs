@@ -1,7 +1,7 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System;
+using System.Collections;
 using System.Diagnostics;
 
 namespace Blockland {
@@ -12,16 +12,12 @@ namespace Blockland {
       mWindow = window;
     }
 
-    public void Start() {
+    public virtual void Start() {
       // set current
       if (mCurrent != null)
         mCurrent.End();
 
       mCurrent = this;
-
-      // set up projection
-      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)mWindow.Width / mWindow.Height, .1f, 1000f);
-      ShaderProgram.Current.Uniform("Projection", ref projection);
 
       // set up camera
       Camera camera = new Camera();
@@ -29,51 +25,66 @@ namespace Blockland {
       mCamera.AddComponent(new Transform(0f, 20f, 40f));
       mCamera.AddComponent(camera);
 
-      mWindow.NativeWindow.MouseDown += (object sender, MouseButtonEventArgs e) => {
-        if (e.Button == MouseButton.Left) {
-          camera.MouseLock = !camera.MouseLock;
-          mWindow.MouseVisible = !camera.MouseLock;
-        }
-      };
-
-      // listen to escape
-      mWindow.NativeWindow.KeyDown += (object sender, KeyboardKeyEventArgs e) => {
-        if (e.Key == Key.Escape)
-          mWindow.Close();
-      };
+      mWindow.NativeWindow.MouseDown += OnMouseDown;
 
       // start clock
       mClock.Start();
     }
 
-    public void Frame() {
+    private void OnMouseDown(object sender, MouseButtonEventArgs e) {
+      Camera camera = mCamera["Camera"] as Camera;
+
+      if (e.Button == MouseButton.Left) {
+        camera.MouseLock = !camera.MouseLock;
+        mWindow.MouseVisible = !camera.MouseLock;
+      }
+    }
+
+    public virtual void BeginFrame() {
       // delta time
-      float deltaTime = mClock.ElapsedMilliseconds / 1000f - mLastTime;
+      mDeltaTime = mClock.ElapsedMilliseconds / 1000f - mLastTime;
       mLastTime = mClock.ElapsedMilliseconds / 1000f;
 
+      // clear window
       mWindow.Clear();
+    }
 
-      mCamera.Update(deltaTime);
+    public virtual void Frame() {
+      // update camera
+      mCamera.Update(mDeltaTime);
 
       // update view
       Transform cameraTransform = mCamera["Transform"] as Transform;
       Matrix4 view = cameraTransform.Matrix.Inverted();
       ShaderProgram.Current.Uniform("View", ref view);
 
+      // draw camera
       mCamera.Draw();
-
-      mWindow.Display();
-
-      mWindow.ProcessEvents();
     }
 
-    public void End() {
+    public virtual void EndFrame() {
+      mWindow.Display();
+      mWindow.ProcessEvents();
+
+      if (!mWindow.Open)
+        End();
+    }
+
+    public virtual void End() {
+      mWindow.NativeWindow.MouseDown -= OnMouseDown;
+
       mCurrent = null;
     }
 
     public Window Window {
       get {
         return mWindow;
+      }
+    }
+
+    public ArrayList GameObjects {
+      get {
+        return mGameObjects;
       }
     }
 
@@ -89,12 +100,16 @@ namespace Blockland {
       }
     }
 
-    private Window mWindow;
-    private GameObject mCamera = new GameObject();
+    protected Window mWindow;
+    protected GameObject mCamera = new GameObject();
+    protected ArrayList mGameObjects = new ArrayList();
+    private ArrayList mToRemove = new ArrayList();
+
     private Stopwatch mClock = new Stopwatch();
     private float mLastTime = 0f;
+    protected float mDeltaTime = 0f;
 
-    private static State mCurrent;
+    protected static State mCurrent;
 
   }
 
