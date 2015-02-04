@@ -90,6 +90,9 @@ namespace Blockland {
 
       }
 
+      GC.KeepAlive(fragmentShader);
+      GC.KeepAlive(vertexShader);
+
     }
 
   }
