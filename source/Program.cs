@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System;
+using System.Diagnostics;
 
 namespace Blockland {
 
@@ -48,10 +49,22 @@ namespace Blockland {
       camera.AddComponent(cameraTransform);
       camera.AddComponent(new Camera());
 
-      cameraTransform.Move(.5f, 0f, 0f);
+      float cameraSpeed = 2f;
+
+      Stopwatch clock = Stopwatch.StartNew();
+      float lastTime = 0f;
 
       while (window.Open) {
+        KeyboardState state = Keyboard.GetState();
+        float deltaTime = clock.ElapsedMilliseconds / 1000f - lastTime;
+        lastTime = clock.ElapsedMilliseconds / 1000f;
+
         window.Clear();
+
+        int deltaX = (state[Key.D] ? 1 : 0) - (state[Key.A] ? 1 : 0);
+        int deltaY = (state[Key.W] ? 1 : 0) - (state[Key.S] ? 1 : 0);
+
+        cameraTransform.Move(deltaX * deltaTime * cameraSpeed, deltaY * deltaTime * cameraSpeed, 0f);
 
         Matrix4 view = cameraTransform.Matrix.Inverted();
         shader.Uniform("view", ref view);
@@ -61,10 +74,11 @@ namespace Blockland {
         window.Display();
 
         window.ProcessEvents();
-        if (Keyboard.GetState()[Key.Escape] || !window.Open) {
+        if (state[Key.Escape] || !window.Open) {
           window.Close();
           break;
         }
+
       }
 
     }
