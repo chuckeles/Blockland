@@ -11,7 +11,7 @@ namespace Blockland {
     public static void Main() {
 
       // window and shader
-      Window window = new Window("Blockland");
+      Window window = new Window("Blockland", 1200, 800);
       ShaderProgram shader = new ShaderProgram();
 
       Shader vertexShader = new Shader(ShaderType.VertexShader, "shaders/vertex.glsl");
