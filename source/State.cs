@@ -50,8 +50,17 @@ namespace Blockland {
     }
 
     public virtual void Frame() {
+      // remove objects
+      foreach (GameObject gameObject in mToRemove)
+        mGameObjects.Remove(gameObject);
+      mToRemove.Clear();
+
       // update camera
       mCamera.Update(mDeltaTime);
+
+      // update objects
+      foreach (GameObject gameObject in mGameObjects)
+        gameObject.Update(mDeltaTime);
 
       // update view
       Transform cameraTransform = mCamera["Transform"] as Transform;
@@ -60,6 +69,10 @@ namespace Blockland {
 
       // draw camera
       mCamera.Draw();
+
+      // draw objects
+      foreach (GameObject gameObject in mGameObjects)
+        gameObject.Draw();
     }
 
     public virtual void EndFrame() {
@@ -74,6 +87,14 @@ namespace Blockland {
       mWindow.NativeWindow.MouseDown -= OnMouseDown;
 
       mCurrent = null;
+    }
+
+    public void AddGameObject(GameObject gameObject) {
+      mGameObjects.Add(gameObject);
+    }
+
+    public void RemoveGameObject(GameObject gameObject) {
+      mToRemove.Add(gameObject);
     }
 
     public Window Window {
