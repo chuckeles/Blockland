@@ -35,6 +35,10 @@ namespace Blockland {
       chunkObject2.AddComponent(chunk2);
 
       AddGameObject(chunkObject2);
+
+      // move second chunk
+      Transform transform = chunkObject2["Transform"] as Transform;
+      transform.Move(Block.Size * Chunk.Size, 0f, 0f);
     }
 
     public void OnEscape(object sender, KeyboardKeyEventArgs e) {

@@ -24,6 +24,18 @@ namespace Blockland {
       Rotation = Quaternion.Identity;
     }
 
+    public override void Attached(GameObject gameObject) {
+      base.Attached(gameObject);
+
+      gameObject.OnDraw += UploadModel;
+    }
+
+    private void UploadModel() {
+      Matrix4 matrix = Matrix;
+
+      ShaderProgram.Current.Uniform("Model", ref matrix);
+    }
+
     public Transform Move(float x, float y, float z, Space space = Space.Local) {
       return Move(new Vector3(x, y, z), space);
     }
