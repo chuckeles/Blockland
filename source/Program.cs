@@ -22,6 +22,10 @@ namespace Blockland {
       shader.Link();
       shader.Use();
 
+      // projection matrix
+      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)window.Width / window.Height, .1f, 100f);
+      shader.Uniform("Projection", ref projection);
+
       // block
       ArrayObject arrayObject = new ArrayObject();
       arrayObject.Bind();
@@ -96,30 +100,20 @@ namespace Blockland {
                            };
       element.CopyData(elementData, true);
 
-      // projection matrix
-      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)window.Width / window.Height, .1f, 100f);
-      shader.Uniform("Projection", ref projection);
-
       // camera object
       Transform cameraTransform = new Transform();
+      Camera cameraComponent = new Camera();
+
       GameObject camera = new GameObject();
       camera.AddComponent(cameraTransform);
-      camera.AddComponent(new Camera());
+      camera.AddComponent(cameraComponent);
 
-      // camera control
-      float cameraSpeed = 10f;
-      float cameraRotateSpeed = 0.003f;
-
-      bool mouseLock = false;
       window.NativeWindow.MouseDown += (object sender, MouseButtonEventArgs e) => {
         if (e.Button == MouseButton.Left) {
-          mouseLock = !mouseLock;
-          window.MouseVisible = !mouseLock;
+          cameraComponent.MouseLock = !cameraComponent.MouseLock;
+          window.MouseVisible = !cameraComponent.MouseLock;
         }
       };
-
-      // previous mouse position
-      Vector2 mousePrevious = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
       // move camera back
       cameraTransform.Move(0f, 0f, 10f, Transform.Space.Global);
@@ -129,36 +123,19 @@ namespace Blockland {
       float lastTime = 0f;
 
       while (window.Open) {
-        // keyboard state, mouse state and delta time
-        MouseState mouseState = Mouse.GetState();
+        // keyboard state and delta time
         KeyboardState keyState = Keyboard.GetState();
         float deltaTime = clock.ElapsedMilliseconds / 1000f - lastTime;
         lastTime = clock.ElapsedMilliseconds / 1000f;
 
         window.Clear();
 
-        // move camera
-        int deltaX = (keyState[Key.D] ? 1 : 0) - (keyState[Key.A] ? 1 : 0);
-        int deltaY = (keyState[Key.S] ? 1 : 0) - (keyState[Key.W] ? 1 : 0);
-
-        cameraTransform.Move(deltaX * deltaTime * cameraSpeed, 0f, deltaY * deltaTime * cameraSpeed);
-
-        // rotate camera
-        if (mouseLock) {
-          float mouseDeltaX = mouseState.X - mousePrevious.X;
-          float mouseDeltaY = mouseState.Y - mousePrevious.Y;
-
-          cameraTransform.Rotate(Vector3.UnitY, -mouseDeltaX * cameraRotateSpeed, Transform.Space.Global);
-          cameraTransform.Rotate(Vector3.UnitX, -mouseDeltaY * cameraRotateSpeed);
-        }
+        // update camera
+        camera.Update(deltaTime);
 
         // center mouse
-        if (mouseLock)
+        if (cameraComponent.MouseLock)
           window.CenterMouse();
-
-        // reset mouse
-        mousePrevious.X = mouseState.X;
-        mousePrevious.Y = mouseState.Y;
 
         // view matrix
         Matrix4 view = cameraTransform.Matrix.Inverted();
