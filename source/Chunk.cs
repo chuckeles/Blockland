@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using SimplexNoise;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -33,10 +34,12 @@ namespace Blockland {
       mVertices = new BufferObject(BufferObject.Type.Vertex);
       mElements = new BufferObject(BufferObject.Type.Element);
 
+      float noiseScale = 10f;
+
       for (int x = 0; x < Size; ++x)
         for (int y = 0; y < Size; ++y)
           for (int z = 0; z < Size; ++z)
-            if (Random.Value < 0.995)
+            if (Noise.Generate(x / noiseScale, y / noiseScale, z / noiseScale) > 0)
               mBlocks.Add(new Block.Position(x, y, z), new Block());
     }
 
@@ -194,7 +197,7 @@ namespace Blockland {
       shader.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
     }
 
-    public static int Size = 16;
+    public static int Size = 32;
 
     private Dictionary<Block.Position, Block> mBlocks;
 
