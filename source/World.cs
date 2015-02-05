@@ -10,33 +10,33 @@ namespace Blockland {
       mHeight = height;
 
       // create chunks
-      for (int x = -(size - 1) / 2; x <= size / 2; ++x)
-        for (int z = -(size - 1) / 2; z <= size / 2; ++z)
-          for (int y = -(size - 1) / 2; y <= size / 2; ++y)
+      for (int x = 0; x < size; ++x)
+        for (int z = 0; z < size; ++z)
+          for (int y = 0; y < size; ++y)
             mChunks.Add(new Vector3i(x, y, z), new Chunk(x, y, z));
 
       // generate chunks
-      for (int x = -(size - 1) / 2; x <= size / 2; ++x)
-        for (int z = -(size - 1) / 2; z <= size / 2; ++z)
-          for (int y = -(size - 1) / 2; y <= size / 2; ++y) {
+      for (int x = 0; x < size; ++x)
+        for (int z = 0; z < size; ++z)
+          for (int y = 0; y < size; ++y) {
             Chunk chunk;
             mChunks.TryGetValue(new Vector3i(x, y, z), out chunk);
             GenerateChunk(chunk);
           }
 
       // build chunks
-      for (int x = -(size - 1) / 2; x <= size / 2; ++x)
-        for (int z = -(size - 1) / 2; z <= size / 2; ++z)
-          for (int y = -(size - 1) / 2; y <= size / 2; ++y) {
+      for (int x = 0; x < size; ++x)
+        for (int z = 0; z < size; ++z)
+          for (int y = 0; y < size; ++y) {
             Chunk chunk;
             mChunks.TryGetValue(new Vector3i(x, y, z), out chunk);
             BuildChunk(chunk);
           }
 
       // create game objects
-      for (int x = -(size - 1) / 2; x <= size / 2; ++x)
-        for (int z = -(size - 1) / 2; z <= size / 2; ++z)
-          for (int y = -(size - 1) / 2; y <= size / 2; ++y) {
+      for (int x = 0; x < size; ++x)
+        for (int z = 0; z < size; ++z)
+          for (int y = 0; y < size; ++y) {
             Chunk chunk;
             mChunks.TryGetValue(new Vector3i(x, y, z), out chunk);
 
@@ -74,15 +74,62 @@ namespace Blockland {
       ArrayList vertexData = new ArrayList();
       ArrayList elementData = new ArrayList();
 
+      // neighbor chunks
+      Chunk chunkFront;
+      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z + 1), out chunkFront);
+      Chunk chunkBack;
+      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z - 1), out chunkBack);
+      Chunk chunkRight;
+      mChunks.TryGetValue(new Vector3i(chunk.Position.X + 1, chunk.Position.Y, chunk.Position.Z), out chunkRight);
+      Chunk chunkLeft;
+      mChunks.TryGetValue(new Vector3i(chunk.Position.X - 1, chunk.Position.Y, chunk.Position.Z), out chunkLeft);
+      Chunk chunkTop;
+      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y + 1, chunk.Position.Z), out chunkTop);
+      Chunk chunkBottom;
+      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
+
       uint count = 0;
       foreach (var block in chunk.Blocks) {
+        // position
         float x = (block.Key.X - Chunk.Size / 2) * Block.Size;
         float y = (block.Key.Y - Chunk.Size / 2) * Block.Size;
         float z = (block.Key.Z - Chunk.Size / 2) * Block.Size;
 
-        // front
+        // sides
+        bool front = !chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, block.Key.Z + 1));
+        bool back = !chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, block.Key.Z - 1));
+        bool right = !chunk.Blocks.ContainsKey(new Vector3i(block.Key.X + 1, block.Key.Y, block.Key.Z));
+        bool left = !chunk.Blocks.ContainsKey(new Vector3i(block.Key.X - 1, block.Key.Y, block.Key.Z));
+        bool top = !chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y + 1, block.Key.Z));
+        bool bottom = !chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y - 1, block.Key.Z));
 
-        if (!chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, block.Key.Z + 1))) {
+        if (block.Key.Z == Chunk.Size - 1) {
+          if (chunkFront != null && chunkFront.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, 0)))
+            front = false;
+        }
+        if (block.Key.Z == 0) {
+          if (chunkBack != null && chunkBack.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, Chunk.Size - 1)))
+            back = false;
+        }
+        if (block.Key.X == Chunk.Size - 1) {
+          if (chunkRight != null && chunkRight.Blocks.ContainsKey(new Vector3i(0, block.Key.Y, block.Key.Z)))
+            right = false;
+        }
+        if (block.Key.X == 0) {
+          if (chunkLeft != null && chunkLeft.Blocks.ContainsKey(new Vector3i(Chunk.Size - 1, block.Key.Y, block.Key.Z)))
+            left = false;
+        }
+        if (block.Key.Y == Chunk.Size - 1) {
+          if (chunkTop != null && chunkTop.Blocks.ContainsKey(new Vector3i(block.Key.X, 0, block.Key.Z)))
+            top = false;
+        }
+        if (block.Key.Y == 0) {
+          if (chunkBottom != null && chunkBottom.Blocks.ContainsKey(new Vector3i(block.Key.X, Chunk.Size - 1, block.Key.Z)))
+            bottom = false;
+        }
+
+        // front
+        if (front) {
           float[] frontVertices = {
                                   x, y, z+Block.Size,                       0f, 0f, 1f,
                                   x+Block.Size, y, z+Block.Size,            0f, 0f, 1f,
@@ -101,8 +148,7 @@ namespace Blockland {
         }
 
         // back
-
-        if (!chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, block.Key.Z - 1))) {
+        if (back) {
           float[] backVertices = {
                                   x+Block.Size, y, z,            0f, 0f, -1f,
                                   x, y, z,                       0f, 0f, -1f,
@@ -121,8 +167,7 @@ namespace Blockland {
         }
 
         // right
-
-        if (!chunk.Blocks.ContainsKey(new Vector3i(block.Key.X + 1, block.Key.Y, block.Key.Z))) {
+        if (right) {
           float[] rightVertices = {
                                   x+Block.Size, y, z+Block.Size,            1f, 0f, 0f,
                                   x+Block.Size, y, z,                       1f, 0f, 0f,
@@ -141,8 +186,7 @@ namespace Blockland {
         }
 
         // left
-
-        if (!chunk.Blocks.ContainsKey(new Vector3i(block.Key.X - 1, block.Key.Y, block.Key.Z))) {
+        if (left) {
           float[] leftVertices = {
                                   x, y, z,                       -1f, 0f, 0f,
                                   x, y, z+Block.Size,            -1f, 0f, 0f,
@@ -161,8 +205,7 @@ namespace Blockland {
         }
 
         // top
-
-        if (!chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y + 1, block.Key.Z))) {
+        if (top) {
           float[] topVertices = {
                                   x, y+Block.Size, z+Block.Size,            0f, 1f, 0f,
                                   x+Block.Size, y+Block.Size, z+Block.Size, 0f, 1f, 0f,
@@ -181,8 +224,7 @@ namespace Blockland {
         }
 
         // bottom
-
-        if (!chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y - 1, block.Key.Z))) {
+        if (bottom) {
           float[] bottomVertices = {
                                   x+Block.Size, y, z+Block.Size, 0f, -1f, 0f,
                                   x, y, z+Block.Size,            0f, -1f, 0f,
