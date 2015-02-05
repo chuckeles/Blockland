@@ -17,6 +17,12 @@ namespace Blockland {
       mWorld.Create(3, 2);
     }
 
+    public override void Frame() {
+      base.Frame();
+
+      mWorld.Update();
+    }
+
     public void OnEscape(object sender, KeyboardKeyEventArgs e) {
       if (e.Key == Key.Escape)
         mWindow.Close();

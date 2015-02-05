@@ -14,8 +14,16 @@ namespace Blockland {
   public class Chunk
     : Component {
 
-    public Chunk()
+    public enum State {
+      Empty,
+      Generated,
+      Ready,
+      Dirty
+    }
+
+    public Chunk(int x, int y, int z)
       : base("Chunk") {
+      mPosition = new Vector3i(x, y, z);
     }
 
     public override void Attached(GameObject gameObject) {
@@ -30,7 +38,11 @@ namespace Blockland {
       Window.Instance.DrawTriangles(mElements.Length);
     }
 
-    public static int Size = 16;
+    public Vector3i Position {
+      get {
+        return mPosition;
+      }
+    }
 
     public ArrayObject ArrayObject {
       get {
@@ -50,8 +62,11 @@ namespace Blockland {
       }
     }
 
+    public static int Size = 16;
     public Dictionary<Vector3i, Block> Blocks = new Dictionary<Vector3i, Block>();
+    public State CurrentState = State.Empty;
 
+    private Vector3i mPosition;
     private ArrayObject mArrayObject = new ArrayObject();
     private BufferObject mVertices = new BufferObject(BufferObject.Type.Vertex);
     private BufferObject mElements = new BufferObject(BufferObject.Type.Element);
