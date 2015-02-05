@@ -9,6 +9,18 @@ namespace Blockland {
 
   public class World {
 
+    public struct ChunkToBuild {
+      public Chunk Chunk;
+      public float[] Vertices;
+      public uint[] Elements;
+
+      public ChunkToBuild(Chunk chunk, float[] vertices, uint[] elements) {
+        Chunk = chunk;
+        Vertices = vertices;
+        Elements = elements;
+      }
+    }
+
     public void Create(int size, int height) {
       mHeight = height;
 
@@ -27,21 +39,32 @@ namespace Blockland {
     }
 
     public void Update() {
-      lock (mReadyChunks) {
-        while (mReadyChunks.Count > 0)
-          State.Current.AddGameObject(mReadyChunks.Dequeue());
+      lock (mChunksToBuild) {
+        if (mChunksToBuild.Count > 0) {
+          ChunkToBuild buildInfo = mChunksToBuild.Dequeue();
+          Chunk chunk = buildInfo.Chunk;
+
+          // copy data to buffer
+          chunk.ArrayObject.Bind();
+          chunk.Vertices.CopyData(buildInfo.Vertices, true);
+          chunk.Elements.CopyData(buildInfo.Elements, true);
+
+          ShaderProgram.Current.Attribute("inPosition", 3, sizeof(float) * 6, 0);
+          ShaderProgram.Current.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
+
+          // create game object
+          GameObject chunkObject = new GameObject();
+
+          chunkObject.AddComponent(new Transform(chunk.Position.X * Chunk.Size * Block.Size, chunk.Position.Y * Chunk.Size * Block.Size, chunk.Position.Z * Chunk.Size * Block.Size));
+          chunkObject.AddComponent(chunk);
+
+          State.Current.AddGameObject(chunkObject);
+        }
       }
     }
 
     public static void Worker(object parameter) {
       World world = parameter as World;
-
-      // create context
-      NativeWindow window;
-      GraphicsContext context;
-      Window.CreateDummyContext(out window, out context);
-      context.MakeCurrent(window.WindowInfo);
-      context.LoadAll();
 
       while (!Interlocked.Equals(State.Current, null)) {
         Chunk chunk;
@@ -68,17 +91,7 @@ namespace Blockland {
 
           case Chunk.State.Generated:
             // build
-            BuildChunk(chunk, world.mChunks);
-
-            // create game object
-            GameObject chunkObject = new GameObject();
-
-            chunkObject.AddComponent(new Transform(chunk.Position.X * Chunk.Size * Block.Size, chunk.Position.Y * Chunk.Size * Block.Size, chunk.Position.Z * Chunk.Size * Block.Size));
-            chunkObject.AddComponent(chunk);
-
-            lock (world.mReadyChunks) {
-              world.mReadyChunks.Enqueue(chunkObject);
-            }
+            BuildChunk(chunk, world.mChunks, world.mChunksToBuild);
 
             break;
         }
@@ -100,25 +113,26 @@ namespace Blockland {
       chunk.CurrentState = Chunk.State.Generated;
     }
 
-    public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks) {
-      chunk.ArrayObject.Bind();
-
+    public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks, Queue<ChunkToBuild> buildQueue) {
       ArrayList vertexData = new ArrayList();
       ArrayList elementData = new ArrayList();
 
       // neighbor chunks
       Chunk chunkFront;
-      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z + 1), out chunkFront);
       Chunk chunkBack;
-      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z - 1), out chunkBack);
       Chunk chunkRight;
-      chunks.TryGetValue(new Vector3i(chunk.Position.X + 1, chunk.Position.Y, chunk.Position.Z), out chunkRight);
       Chunk chunkLeft;
-      chunks.TryGetValue(new Vector3i(chunk.Position.X - 1, chunk.Position.Y, chunk.Position.Z), out chunkLeft);
       Chunk chunkTop;
-      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y + 1, chunk.Position.Z), out chunkTop);
       Chunk chunkBottom;
-      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
+
+      lock (chunks) {
+        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z + 1), out chunkFront);
+        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z - 1), out chunkBack);
+        chunks.TryGetValue(new Vector3i(chunk.Position.X + 1, chunk.Position.Y, chunk.Position.Z), out chunkRight);
+        chunks.TryGetValue(new Vector3i(chunk.Position.X - 1, chunk.Position.Y, chunk.Position.Z), out chunkLeft);
+        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y + 1, chunk.Position.Z), out chunkTop);
+        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
+      }
 
       uint count = 0;
       foreach (var block in chunk.Blocks) {
@@ -302,18 +316,16 @@ namespace Blockland {
       float[] vertices = vertexData.ToArray(typeof(float)) as float[];
       uint[] elements = elementData.ToArray(typeof(uint)) as uint[];
 
-      chunk.Vertices.CopyData(vertices, true);
-      chunk.Elements.CopyData(elements, true);
-
-      ShaderProgram.Current.Attribute("inPosition", 3, sizeof(float) * 6, 0);
-      ShaderProgram.Current.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
-
       chunk.CurrentState = Chunk.State.Ready;
+
+      lock (buildQueue) {
+        buildQueue.Enqueue(new ChunkToBuild(chunk, vertices, elements));
+      }
     }
 
     private Dictionary<Vector3i, Chunk> mChunks = new Dictionary<Vector3i, Chunk>();
-    private Queue<GameObject> mReadyChunks = new Queue<GameObject>();
     private Queue<Chunk> mChunksToProcess = new Queue<Chunk>();
+    private Queue<ChunkToBuild> mChunksToBuild = new Queue<ChunkToBuild>();
     private int mHeight;
 
   }
