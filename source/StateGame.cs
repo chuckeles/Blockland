@@ -14,7 +14,7 @@ namespace Blockland {
 
       mWindow.NativeWindow.KeyDown += OnEscape;
 
-      int blocks = 16;
+      int blocks = 8;
       mWorld.Create(blocks, 8);
 
       float halfSize = blocks * Chunk.Size * Block.Size / 2;

@@ -123,7 +123,7 @@ namespace Blockland {
               float depth = localHeight - y;
               float cave = (float)ridged.GetValue(
                 (x + chunk.Position.X * Chunk.Size),
-                (y + chunk.Position.Y * Chunk.Size),
+                ((y + chunk.Position.Y * Chunk.Size) * 1.5f),
                 (z + chunk.Position.Z * Chunk.Size));
 
               float depthClapmed = (depth < 4f ? 4f : depth > Chunk.Size * 2 ? Chunk.Size * 2 : depth) / (Chunk.Size * 2);
