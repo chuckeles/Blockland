@@ -6,7 +6,7 @@ namespace Blockland {
   public class Camera
     : Component {
 
-    public Camera(float cameraSpeed = 10f, float cameraRotateSpeed = 0.003f)
+    public Camera(float cameraSpeed = 30f, float cameraRotateSpeed = 0.003f)
       : base("Camera") {
       Speed = cameraSpeed;
       RotateSpeed = cameraRotateSpeed;

@@ -12,12 +12,10 @@ namespace Blockland {
     public override void Start() {
       base.Start();
 
-      (mCamera["Camera"] as Camera).Speed = 30f;
-
       mWindow.NativeWindow.KeyDown += OnEscape;
 
       int height = 4;
-      int size = 8;
+      int size = 3;
 
       for (int x = 0; x < size; ++x)
         for (int y = 0; y < height; ++y)
