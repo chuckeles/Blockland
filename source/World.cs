@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using SimplexNoise;
+﻿using SimplexNoise;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -34,7 +32,7 @@ namespace Blockland {
           }
 
       // spawn worker
-      uint workers = 5;
+      uint workers = 3;
       for (uint i = 0; i < workers; ++i)
         (new Thread(Worker)).Start(this);
     }
@@ -91,30 +89,36 @@ namespace Blockland {
             break;
 
           case Chunk.State.Generated:
+          case Chunk.State.Dirty:
             // build
             BuildChunk(chunk, world.mChunks, world.mChunksToBuild);
 
             break;
         }
       }
+
     }
 
     public static void GenerateChunk(Chunk chunk, int height) {
-      float noiseScale = 100f;
-      float noiseScaleHeight = 150f;
+
+      float noiseFrequency = 1 / 256f;
 
       for (int x = 0; x < Chunk.Size; ++x)
-        for (int y = 0; y < Chunk.Size; ++y)
-          for (int z = 0; z < Chunk.Size; ++z)
-            if (Noise.Generate((x + chunk.Position.X * Chunk.Size) / noiseScale,
-              (y + chunk.Position.Y * Chunk.Size) / noiseScaleHeight,
-              (z + chunk.Position.Z * Chunk.Size) / noiseScale) - ((y + chunk.Position.Y * Chunk.Size - height / 2 * Chunk.Size) / 32f) > 0)
+        for (int z = 0; z < Chunk.Size; ++z) {
+          float noiseHeight = Random.Simplex((x + chunk.Position.X * Chunk.Size) * noiseFrequency, (z + chunk.Position.Z * Chunk.Size) * noiseFrequency, 4, height * Chunk.Size / 8, height * Chunk.Size / 8 * 7);
+          float localHeight = noiseHeight - chunk.Position.Y * Chunk.Size;
+
+          for (int y = 0; y < Chunk.Size; ++y) {
+            if (y < localHeight)
               chunk.Blocks.Add(new Vector3i(x, y, z), new Block());
+          }
+        }
 
       chunk.CurrentState = Chunk.State.Generated;
     }
 
     public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks, Queue<ChunkToBuild> buildQueue) {
+
       ArrayList vertexData = new ArrayList();
       ArrayList elementData = new ArrayList();
 
@@ -126,14 +130,12 @@ namespace Blockland {
       Chunk chunkTop;
       Chunk chunkBottom;
 
-      lock (chunks) {
-        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z + 1), out chunkFront);
-        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z - 1), out chunkBack);
-        chunks.TryGetValue(new Vector3i(chunk.Position.X + 1, chunk.Position.Y, chunk.Position.Z), out chunkRight);
-        chunks.TryGetValue(new Vector3i(chunk.Position.X - 1, chunk.Position.Y, chunk.Position.Z), out chunkLeft);
-        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y + 1, chunk.Position.Z), out chunkTop);
-        chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
-      }
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z + 1), out chunkFront);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z - 1), out chunkBack);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X + 1, chunk.Position.Y, chunk.Position.Z), out chunkRight);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X - 1, chunk.Position.Y, chunk.Position.Z), out chunkLeft);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y + 1, chunk.Position.Z), out chunkTop);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
 
       uint count = 0;
       foreach (var block in chunk.Blocks) {

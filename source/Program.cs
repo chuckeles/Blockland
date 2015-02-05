@@ -18,9 +18,6 @@ namespace Blockland {
       shader.Link();
       shader.Use();
 
-      System.Random random = new System.Random();
-      random.NextBytes(Noise.perm);
-
       State state = new StatePrepare(window);
       state.Start();
 
