@@ -48,8 +48,9 @@ namespace Blockland {
           chunk.Vertices.CopyData(buildInfo.Vertices, true);
           chunk.Elements.CopyData(buildInfo.Elements, true);
 
-          ShaderProgram.Current.Attribute("inPosition", 3, sizeof(float) * 6, 0);
-          ShaderProgram.Current.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
+          ShaderProgram.Current.Attribute("inPosition", 3, sizeof(float) * 7, 0);
+          ShaderProgram.Current.Attribute("inNormal", 3, sizeof(float) * 7, sizeof(float) * 3);
+          ShaderProgram.Current.Attribute("inType", 1, sizeof(float) * 7, sizeof(float) * 6);
 
           // create game object
           GameObject chunkObject = new GameObject();
@@ -109,8 +110,17 @@ namespace Blockland {
           float localHeight = noiseHeight - chunk.Position.Y * Chunk.Size;
 
           for (int y = 0; y < Chunk.Size; ++y) {
-            if (y < localHeight)
-              chunk.Blocks.Add(new Vector3i(x, y, z), new Block());
+            if (y < localHeight) {
+              Block.Type type = Block.Type.Stone;
+
+              if (y > localHeight - 1)
+                type = Block.Type.Grass;
+
+              else if (y > localHeight - Random.Range(4, 6))
+                type = Block.Type.Dirt;
+
+              chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
+            }
           }
         }
 
@@ -205,10 +215,10 @@ namespace Blockland {
         // front
         if (front) {
           float[] frontVertices = {
-                                  x, y, z+Block.Size,                       0f, 0f, 1f,
-                                  x+Block.Size, y, z+Block.Size,            0f, 0f, 1f,
-                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 0f, 1f,
-                                  x, y+Block.Size, z+Block.Size,            0f, 0f, 1f
+                                  x, y, z+Block.Size,                       0f, 0f, 1f, (float)block.Value.BlockType,
+                                  x+Block.Size, y, z+Block.Size,            0f, 0f, 1f, (float)block.Value.BlockType,
+                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 0f, 1f, (float)block.Value.BlockType,
+                                  x, y+Block.Size, z+Block.Size,            0f, 0f, 1f, (float)block.Value.BlockType
                                 };
           vertexData.AddRange(frontVertices);
 
@@ -224,10 +234,10 @@ namespace Blockland {
         // back
         if (back) {
           float[] backVertices = {
-                                  x+Block.Size, y, z,            0f, 0f, -1f,
-                                  x, y, z,                       0f, 0f, -1f,
-                                  x, y+Block.Size, z,            0f, 0f, -1f,
-                                  x+Block.Size, y+Block.Size, z, 0f, 0f, -1f
+                                  x+Block.Size, y, z,            0f, 0f, -1f, (float)block.Value.BlockType,
+                                  x, y, z,                       0f, 0f, -1f, (float)block.Value.BlockType,
+                                  x, y+Block.Size, z,            0f, 0f, -1f, (float)block.Value.BlockType,
+                                  x+Block.Size, y+Block.Size, z, 0f, 0f, -1f, (float)block.Value.BlockType
                                 };
           vertexData.AddRange(backVertices);
 
@@ -243,10 +253,10 @@ namespace Blockland {
         // right
         if (right) {
           float[] rightVertices = {
-                                  x+Block.Size, y, z+Block.Size,            1f, 0f, 0f,
-                                  x+Block.Size, y, z,                       1f, 0f, 0f,
-                                  x+Block.Size, y+Block.Size, z,            1f, 0f, 0f,
-                                  x+Block.Size, y+Block.Size, z+Block.Size, 1f, 0f, 0f
+                                  x+Block.Size, y, z+Block.Size,            1f, 0f, 0f, (float)block.Value.BlockType,
+                                  x+Block.Size, y, z,                       1f, 0f, 0f, (float)block.Value.BlockType,
+                                  x+Block.Size, y+Block.Size, z,            1f, 0f, 0f, (float)block.Value.BlockType,
+                                  x+Block.Size, y+Block.Size, z+Block.Size, 1f, 0f, 0f, (float)block.Value.BlockType
                                 };
           vertexData.AddRange(rightVertices);
 
@@ -262,10 +272,10 @@ namespace Blockland {
         // left
         if (left) {
           float[] leftVertices = {
-                                  x, y, z,                       -1f, 0f, 0f,
-                                  x, y, z+Block.Size,            -1f, 0f, 0f,
-                                  x, y+Block.Size, z+Block.Size, -1f, 0f, 0f,
-                                  x, y+Block.Size, z,            -1f, 0f, 0f
+                                  x, y, z,                       -1f, 0f, 0f, (float)block.Value.BlockType,
+                                  x, y, z+Block.Size,            -1f, 0f, 0f, (float)block.Value.BlockType,
+                                  x, y+Block.Size, z+Block.Size, -1f, 0f, 0f, (float)block.Value.BlockType,
+                                  x, y+Block.Size, z,            -1f, 0f, 0f, (float)block.Value.BlockType
                                 };
           vertexData.AddRange(leftVertices);
 
@@ -281,10 +291,10 @@ namespace Blockland {
         // top
         if (top) {
           float[] topVertices = {
-                                  x, y+Block.Size, z+Block.Size,            0f, 1f, 0f,
-                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 1f, 0f,
-                                  x+Block.Size, y+Block.Size, z,            0f, 1f, 0f,
-                                  x, y+Block.Size, z,                       0f, 1f, 0f
+                                  x, y+Block.Size, z+Block.Size,            0f, 1f, 0f, (float)block.Value.BlockType,
+                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 1f, 0f, (float)block.Value.BlockType,
+                                  x+Block.Size, y+Block.Size, z,            0f, 1f, 0f, (float)block.Value.BlockType,
+                                  x, y+Block.Size, z,                       0f, 1f, 0f, (float)block.Value.BlockType
                                 };
           vertexData.AddRange(topVertices);
 
@@ -300,10 +310,10 @@ namespace Blockland {
         // bottom
         if (bottom) {
           float[] bottomVertices = {
-                                  x+Block.Size, y, z+Block.Size, 0f, -1f, 0f,
-                                  x, y, z+Block.Size,            0f, -1f, 0f,
-                                  x, y, z,                       0f, -1f, 0f,
-                                  x+Block.Size, y, z,            0f, -1f, 0f
+                                  x+Block.Size, y, z+Block.Size, 0f, -1f, 0f, (float)block.Value.BlockType,
+                                  x, y, z+Block.Size,            0f, -1f, 0f, (float)block.Value.BlockType,
+                                  x, y, z,                       0f, -1f, 0f, (float)block.Value.BlockType,
+                                  x+Block.Size, y, z,            0f, -1f, 0f, (float)block.Value.BlockType
                                 };
           vertexData.AddRange(bottomVertices);
 

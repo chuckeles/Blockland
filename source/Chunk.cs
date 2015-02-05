@@ -7,6 +7,18 @@ namespace Blockland {
 
   public struct Block {
 
+    public enum Type {
+      Grass = 1,
+      Dirt = 2,
+      Stone = 3
+    }
+
+    public Block(Type type) {
+      BlockType = type;
+    }
+
+    public Type BlockType;
+
     public static float Size = 2f;
 
   }
