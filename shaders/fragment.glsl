@@ -5,7 +5,7 @@ in vec3 Normal;
 out vec4 outColor;
 
 void main() {
-  vec3 color = vec3(0.7, 0.7, 0.7);
+  vec3 color = vec3(0.2, 0.7, 0.2);
 
   float light = 0.5 + Normal.x * 0.1 + Normal.y * 0.4 + Normal.z * 0.05;
 
