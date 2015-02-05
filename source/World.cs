@@ -104,27 +104,51 @@ namespace Blockland {
         bool bottom = !chunk.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y - 1, block.Key.Z));
 
         if (block.Key.Z == Chunk.Size - 1) {
-          if (chunkFront != null && chunkFront.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, 0)))
+          if (chunkFront != null) {
+            if (chunkFront.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, 0)))
+              front = false;
+          }
+          else
             front = false;
         }
         if (block.Key.Z == 0) {
-          if (chunkBack != null && chunkBack.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, Chunk.Size - 1)))
+          if (chunkBack != null) {
+            if (chunkBack.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, Chunk.Size - 1)))
+              back = false;
+          }
+          else
             back = false;
         }
         if (block.Key.X == Chunk.Size - 1) {
-          if (chunkRight != null && chunkRight.Blocks.ContainsKey(new Vector3i(0, block.Key.Y, block.Key.Z)))
+          if (chunkRight != null) {
+            if (chunkRight.Blocks.ContainsKey(new Vector3i(0, block.Key.Y, block.Key.Z)))
+              right = false;
+          }
+          else
             right = false;
         }
         if (block.Key.X == 0) {
-          if (chunkLeft != null && chunkLeft.Blocks.ContainsKey(new Vector3i(Chunk.Size - 1, block.Key.Y, block.Key.Z)))
+          if (chunkLeft != null) {
+            if (chunkLeft.Blocks.ContainsKey(new Vector3i(Chunk.Size - 1, block.Key.Y, block.Key.Z)))
+              left = false;
+          }
+          else
             left = false;
         }
         if (block.Key.Y == Chunk.Size - 1) {
-          if (chunkTop != null && chunkTop.Blocks.ContainsKey(new Vector3i(block.Key.X, 0, block.Key.Z)))
+          if (chunkTop != null) {
+            if (chunkTop.Blocks.ContainsKey(new Vector3i(block.Key.X, 0, block.Key.Z)))
+              top = false;
+          }
+          else
             top = false;
         }
         if (block.Key.Y == 0) {
-          if (chunkBottom != null && chunkBottom.Blocks.ContainsKey(new Vector3i(block.Key.X, Chunk.Size - 1, block.Key.Z)))
+          if (chunkBottom != null) {
+            if (chunkBottom.Blocks.ContainsKey(new Vector3i(block.Key.X, Chunk.Size - 1, block.Key.Z)))
+              bottom = false;
+          }
+          else
             bottom = false;
         }
 
