@@ -120,10 +120,14 @@ namespace Blockland {
 
           for (int y = 0; y < Chunk.Size; ++y) {
             if (y < localHeight) {
+              float depth = localHeight - y;
               float cave = (float)ridged.GetValue(
                 (x + chunk.Position.X * Chunk.Size),
                 (y + chunk.Position.Y * Chunk.Size),
                 (z + chunk.Position.Z * Chunk.Size));
+
+              float depthClapmed = (depth < 4f ? 4f : depth > Chunk.Size * 2 ? Chunk.Size * 2 : depth) / (Chunk.Size * 2);
+              cave *= 0.9f + depthClapmed * 0.1f;
 
               if (cave > 0.8f)
                 continue;
@@ -133,7 +137,7 @@ namespace Blockland {
               if (y > localHeight - 1)
                 type = Block.Type.Grass;
 
-              else if (y > localHeight - Random.Range(4, 6))
+              else if (depth < Random.Range(4, 6))
                 type = Block.Type.Dirt;
 
               chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
