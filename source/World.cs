@@ -118,6 +118,7 @@ namespace Blockland {
     }
 
     public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks, Queue<ChunkToBuild> buildQueue) {
+      bool worldBoundaries = true;
 
       ArrayList vertexData = new ArrayList();
       ArrayList elementData = new ArrayList();
@@ -157,7 +158,7 @@ namespace Blockland {
             if (chunkFront.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, 0)))
               front = false;
           }
-          else
+          else if (!worldBoundaries)
             front = false;
         }
         if (block.Key.Z == 0) {
@@ -165,7 +166,7 @@ namespace Blockland {
             if (chunkBack.Blocks.ContainsKey(new Vector3i(block.Key.X, block.Key.Y, Chunk.Size - 1)))
               back = false;
           }
-          else
+          else if (!worldBoundaries)
             back = false;
         }
         if (block.Key.X == Chunk.Size - 1) {
@@ -173,7 +174,7 @@ namespace Blockland {
             if (chunkRight.Blocks.ContainsKey(new Vector3i(0, block.Key.Y, block.Key.Z)))
               right = false;
           }
-          else
+          else if (!worldBoundaries)
             right = false;
         }
         if (block.Key.X == 0) {
@@ -181,7 +182,7 @@ namespace Blockland {
             if (chunkLeft.Blocks.ContainsKey(new Vector3i(Chunk.Size - 1, block.Key.Y, block.Key.Z)))
               left = false;
           }
-          else
+          else if (!worldBoundaries)
             left = false;
         }
         if (block.Key.Y == Chunk.Size - 1) {
@@ -189,7 +190,7 @@ namespace Blockland {
             if (chunkTop.Blocks.ContainsKey(new Vector3i(block.Key.X, 0, block.Key.Z)))
               top = false;
           }
-          else
+          else if (!worldBoundaries)
             top = false;
         }
         if (block.Key.Y == 0) {
@@ -197,7 +198,7 @@ namespace Blockland {
             if (chunkBottom.Blocks.ContainsKey(new Vector3i(block.Key.X, Chunk.Size - 1, block.Key.Z)))
               bottom = false;
           }
-          else
+          else if (!worldBoundaries)
             bottom = false;
         }
 
