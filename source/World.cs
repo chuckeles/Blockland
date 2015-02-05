@@ -1,6 +1,9 @@
-﻿using SimplexNoise;
+﻿using OpenTK;
+using OpenTK.Graphics;
+using SimplexNoise;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Blockland {
 
@@ -12,48 +15,77 @@ namespace Blockland {
       // create chunks
       for (int x = 0; x < size; ++x)
         for (int z = 0; z < size; ++z)
-          for (int y = 0; y < size; ++y)
-            mChunks.Add(new Vector3i(x, y, z), new Chunk(x, y, z));
-
-      // generate chunks
-      for (int x = 0; x < size; ++x)
-        for (int z = 0; z < size; ++z)
-          for (int y = 0; y < size; ++y) {
-            Chunk chunk;
-            mChunks.TryGetValue(new Vector3i(x, y, z), out chunk);
-            GenerateChunk(chunk);
+          for (int y = 0; y < height; ++y) {
+            Chunk chunk = new Chunk(x, y, z);
+            mChunks.Add(chunk.Position, chunk);
+            mChunksToProcess.Enqueue(chunk);
           }
 
-      // build chunks
-      for (int x = 0; x < size; ++x)
-        for (int z = 0; z < size; ++z)
-          for (int y = 0; y < size; ++y) {
-            Chunk chunk;
-            mChunks.TryGetValue(new Vector3i(x, y, z), out chunk);
-            BuildChunk(chunk);
-          }
-
-      // create game objects
-      for (int x = 0; x < size; ++x)
-        for (int z = 0; z < size; ++z)
-          for (int y = 0; y < size; ++y) {
-            Chunk chunk;
-            mChunks.TryGetValue(new Vector3i(x, y, z), out chunk);
-
-            GameObject gameObject = new GameObject();
-            gameObject.AddComponent(new Transform(x * Chunk.Size * Block.Size, y * Chunk.Size * Block.Size, z * Chunk.Size * Block.Size));
-            gameObject.AddComponent(chunk);
-
-            mReadyChunks.Enqueue(gameObject);
-          }
+      // spawn worker
+      Thread worker = new Thread(Worker);
+      worker.Start(this);
     }
 
     public void Update() {
-      while (mReadyChunks.Count > 0)
-        State.Current.AddGameObject(mReadyChunks.Dequeue());
+      lock (mReadyChunks) {
+        while (mReadyChunks.Count > 0)
+          State.Current.AddGameObject(mReadyChunks.Dequeue());
+      }
     }
 
-    public void GenerateChunk(Chunk chunk) {
+    public static void Worker(object parameter) {
+      World world = parameter as World;
+
+      // create context
+      NativeWindow window;
+      GraphicsContext context;
+      Window.CreateDummyContext(out window, out context);
+      context.MakeCurrent(window.WindowInfo);
+      context.LoadAll();
+
+      while (!Interlocked.Equals(State.Current, null)) {
+        Chunk chunk;
+
+        lock (world.mChunksToProcess) {
+          if (world.mChunksToProcess.Count > 0)
+            chunk = world.mChunksToProcess.Dequeue();
+          else
+            continue;
+        }
+
+        // what to do
+        switch (chunk.CurrentState) {
+          case Chunk.State.Empty:
+            // generate
+            GenerateChunk(chunk, world.mHeight);
+
+            // put to queue for processing
+            lock (world.mChunksToProcess) {
+              world.mChunksToProcess.Enqueue(chunk);
+            }
+
+            break;
+
+          case Chunk.State.Generated:
+            // build
+            BuildChunk(chunk, world.mChunks);
+
+            // create game object
+            GameObject chunkObject = new GameObject();
+
+            chunkObject.AddComponent(new Transform(chunk.Position.X * Chunk.Size * Block.Size, chunk.Position.Y * Chunk.Size * Block.Size, chunk.Position.Z * Chunk.Size * Block.Size));
+            chunkObject.AddComponent(chunk);
+
+            lock (world.mReadyChunks) {
+              world.mReadyChunks.Enqueue(chunkObject);
+            }
+
+            break;
+        }
+      }
+    }
+
+    public static void GenerateChunk(Chunk chunk, int height) {
       float noiseScale = 40f;
       float noiseScaleHeight = 80f;
 
@@ -62,13 +94,13 @@ namespace Blockland {
           for (int z = 0; z < Chunk.Size; ++z)
             if (Noise.Generate((x + chunk.Position.X * Chunk.Size) / noiseScale,
               (y + chunk.Position.Y * Chunk.Size) / noiseScaleHeight,
-              (z + chunk.Position.Z * Chunk.Size) / noiseScale) - ((y + chunk.Position.Y * Chunk.Size - mHeight / 2 * Chunk.Size) / 16f) > 0)
+              (z + chunk.Position.Z * Chunk.Size) / noiseScale) - ((y + chunk.Position.Y * Chunk.Size - height / 2 * Chunk.Size) / 16f) > 0)
               chunk.Blocks.Add(new Vector3i(x, y, z), new Block());
 
       chunk.CurrentState = Chunk.State.Generated;
     }
 
-    public void BuildChunk(Chunk chunk) {
+    public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks) {
       chunk.ArrayObject.Bind();
 
       ArrayList vertexData = new ArrayList();
@@ -76,17 +108,17 @@ namespace Blockland {
 
       // neighbor chunks
       Chunk chunkFront;
-      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z + 1), out chunkFront);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z + 1), out chunkFront);
       Chunk chunkBack;
-      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z - 1), out chunkBack);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y, chunk.Position.Z - 1), out chunkBack);
       Chunk chunkRight;
-      mChunks.TryGetValue(new Vector3i(chunk.Position.X + 1, chunk.Position.Y, chunk.Position.Z), out chunkRight);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X + 1, chunk.Position.Y, chunk.Position.Z), out chunkRight);
       Chunk chunkLeft;
-      mChunks.TryGetValue(new Vector3i(chunk.Position.X - 1, chunk.Position.Y, chunk.Position.Z), out chunkLeft);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X - 1, chunk.Position.Y, chunk.Position.Z), out chunkLeft);
       Chunk chunkTop;
-      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y + 1, chunk.Position.Z), out chunkTop);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y + 1, chunk.Position.Z), out chunkTop);
       Chunk chunkBottom;
-      mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
+      chunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
 
       uint count = 0;
       foreach (var block in chunk.Blocks) {
@@ -275,10 +307,13 @@ namespace Blockland {
 
       ShaderProgram.Current.Attribute("inPosition", 3, sizeof(float) * 6, 0);
       ShaderProgram.Current.Attribute("inNormal", 3, sizeof(float) * 6, sizeof(float) * 3);
+
+      chunk.CurrentState = Chunk.State.Ready;
     }
 
     private Dictionary<Vector3i, Chunk> mChunks = new Dictionary<Vector3i, Chunk>();
     private Queue<GameObject> mReadyChunks = new Queue<GameObject>();
+    private Queue<Chunk> mChunksToProcess = new Queue<Chunk>();
     private int mHeight;
 
   }

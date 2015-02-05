@@ -95,6 +95,12 @@ namespace Blockland {
       }
     }
 
+    public static void CreateDummyContext(out NativeWindow window, out GraphicsContext context) {
+      window = new NativeWindow(10, 10, "Blockland", GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default);
+      context = new GraphicsContext(GraphicsMode.Default, window.WindowInfo, 4, 4, GraphicsContextFlags.Default);
+      window.WindowBorder = WindowBorder.Hidden;
+    }
+
     private NativeWindow mWindow;
     private GraphicsContext mContext;
 
