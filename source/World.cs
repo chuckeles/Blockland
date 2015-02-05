@@ -34,8 +34,9 @@ namespace Blockland {
           }
 
       // spawn worker
-      Thread worker = new Thread(Worker);
-      worker.Start(this);
+      uint workers = 5;
+      for (uint i = 0; i < workers; ++i)
+        (new Thread(Worker)).Start(this);
     }
 
     public void Update() {
@@ -99,15 +100,15 @@ namespace Blockland {
     }
 
     public static void GenerateChunk(Chunk chunk, int height) {
-      float noiseScale = 40f;
-      float noiseScaleHeight = 80f;
+      float noiseScale = 100f;
+      float noiseScaleHeight = 150f;
 
       for (int x = 0; x < Chunk.Size; ++x)
         for (int y = 0; y < Chunk.Size; ++y)
           for (int z = 0; z < Chunk.Size; ++z)
             if (Noise.Generate((x + chunk.Position.X * Chunk.Size) / noiseScale,
               (y + chunk.Position.Y * Chunk.Size) / noiseScaleHeight,
-              (z + chunk.Position.Z * Chunk.Size) / noiseScale) - ((y + chunk.Position.Y * Chunk.Size - height / 2 * Chunk.Size) / 16f) > 0)
+              (z + chunk.Position.Z * Chunk.Size) / noiseScale) - ((y + chunk.Position.Y * Chunk.Size - height / 2 * Chunk.Size) / 32f) > 0)
               chunk.Blocks.Add(new Vector3i(x, y, z), new Block());
 
       chunk.CurrentState = Chunk.State.Generated;
