@@ -1,4 +1,4 @@
-﻿namespace Blockland.source {
+﻿namespace Blockland {
 
   public struct Vector3i {
 
