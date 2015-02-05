@@ -14,7 +14,11 @@ namespace Blockland {
 
       mWindow.NativeWindow.KeyDown += OnEscape;
 
-      mWorld.Create(8, 4);
+      int blocks = 10;
+      mWorld.Create(blocks, 4);
+
+      float halfSize = blocks * Chunk.Size * Block.Size / 2;
+      (mCamera["Transform"] as Transform).Move(halfSize, halfSize, halfSize);
     }
 
     public override void Frame() {
