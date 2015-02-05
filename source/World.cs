@@ -103,14 +103,27 @@ namespace Blockland {
     public static void GenerateChunk(Chunk chunk, int height) {
 
       float noiseFrequency = 1 / 256f;
+      float caveNoiseFrequency = noiseFrequency * 2;
+      float offset1 = 500f;
+      float offset2 = -500f;
 
       for (int x = 0; x < Chunk.Size; ++x)
         for (int z = 0; z < Chunk.Size; ++z) {
-          float noiseHeight = Random.Simplex((x + chunk.Position.X * Chunk.Size) * noiseFrequency, (z + chunk.Position.Z * Chunk.Size) * noiseFrequency, 4, height * Chunk.Size / 8, height * Chunk.Size / 8 * 7);
+          float noiseHeight = Random.Simplex((x + chunk.Position.X * Chunk.Size) * noiseFrequency, 0f, (z + chunk.Position.Z * Chunk.Size) * noiseFrequency, 4, height * Chunk.Size / 8, height * Chunk.Size / 8 * 7);
           float localHeight = noiseHeight - chunk.Position.Y * Chunk.Size;
 
           for (int y = 0; y < Chunk.Size; ++y) {
-            if (y < localHeight) {
+            float noiseCave1 = Random.Simplex((offset1 + x + chunk.Position.X * Chunk.Size) * caveNoiseFrequency,
+              (offset1 + y + chunk.Position.Y * Chunk.Size) * caveNoiseFrequency,
+              (offset1 + z + chunk.Position.Z * Chunk.Size) * caveNoiseFrequency, 4, 0f, 1f);
+
+            float noiseCave2 = Random.Simplex((offset2 + x + chunk.Position.X * Chunk.Size) * caveNoiseFrequency,
+              (offset2 + y + chunk.Position.Y * Chunk.Size) * caveNoiseFrequency,
+              (offset2 + z + chunk.Position.Z * Chunk.Size) * caveNoiseFrequency, 4, 0f, 1f);
+
+            bool cave = ((noiseCave1 > 0.55 && noiseCave1 < 0.6) && (noiseCave2 > 0.5 && noiseCave2 < 0.6));
+
+            if (y < localHeight && !cave) {
               Block.Type type = Block.Type.Stone;
 
               if (y > localHeight - 1)
@@ -128,7 +141,7 @@ namespace Blockland {
     }
 
     public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks, Queue<ChunkToBuild> buildQueue) {
-      bool worldBoundaries = true;
+      bool worldBoundaries = false;
 
       ArrayList vertexData = new ArrayList();
       ArrayList elementData = new ArrayList();

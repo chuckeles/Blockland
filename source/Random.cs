@@ -24,7 +24,7 @@ namespace Blockland {
       return new Vector2(Range(from, to), Range(from, to));
     }
 
-    public static float Simplex(float x, float y, int octaves, float min = -1, float max = 1, float persistance = 0.5f) {
+    public static float Simplex(float x, float y, float z, int octaves, float min = -1, float max = 1, float persistance = 0.5f) {
       float maxAmp = 0;
       float noise = 0;
 
@@ -32,7 +32,7 @@ namespace Blockland {
         float freq = (float)Math.Pow(2, i);
         float amp = (float)Math.Pow(persistance, i);
 
-        noise += Noise.Generate(x * freq, y * freq, i) * amp;
+        noise += Noise.Generate(x * freq, y * freq, z * freq) * amp;
         maxAmp += amp;
       }
 
