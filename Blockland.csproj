@@ -81,6 +81,7 @@
     <Compile Include="source\StateGame.cs" />
     <Compile Include="source\StatePrepare.cs" />
     <Compile Include="source\Transform.cs" />
+    <Compile Include="source\Vector3i.cs" />
     <Compile Include="source\Window.cs" />
   </ItemGroup>
   <ItemGroup>
