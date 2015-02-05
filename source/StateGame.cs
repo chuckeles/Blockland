@@ -14,7 +14,7 @@ namespace Blockland {
 
       mWindow.NativeWindow.KeyDown += OnEscape;
 
-      mWorld.Create(3, 4);
+      mWorld.Create(8, 4);
     }
 
     public override void Frame() {
