@@ -18,7 +18,7 @@ namespace Blockland {
       mWorld.Create(blocks, 8);
 
       float halfSize = blocks * Chunk.Size * Block.Size / 2;
-      (mCamera["Transform"] as Transform).Move(halfSize, halfSize, halfSize);
+      (mCamera["Transform"] as Transform).Move(halfSize, 100f, halfSize);
     }
 
     public override void Frame() {

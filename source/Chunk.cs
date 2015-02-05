@@ -1,5 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using SimplexNoise;
 using System.Collections;
 using System.Collections.Generic;
 

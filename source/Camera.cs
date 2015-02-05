@@ -29,11 +29,13 @@ namespace Blockland {
       Transform transform = (Transform)mGameObject.GetComponent("Transform");
 
       int deltaX = (keyState[Key.D] ? 1 : 0) - (keyState[Key.A] ? 1 : 0);
-      int deltaY = (keyState[Key.Space] ? 1 : 0) - (keyState[Key.ShiftLeft] ? 1 : 0);
+      int deltaY = (keyState[Key.Space] ? 1 : 0) - (keyState[Key.ControlLeft] ? 1 : 0);
       int deltaZ = (keyState[Key.S] ? 1 : 0) - (keyState[Key.W] ? 1 : 0);
 
-      transform.Move(deltaX * deltaTime * Speed, 0f, deltaZ * deltaTime * Speed);
-      transform.Move(0f, deltaY * deltaTime * Speed, 0f, Transform.Space.Global);
+      int boost = keyState[Key.ShiftLeft] ? 2 : 1;
+
+      transform.Move(deltaX * deltaTime * Speed * boost, 0f, deltaZ * deltaTime * Speed * boost);
+      transform.Move(0f, deltaY * deltaTime * Speed * boost, 0f, Transform.Space.Global);
 
       if (MouseLock) {
         float mouseDeltaX = mouseState.X - mMousePrevious.X;
