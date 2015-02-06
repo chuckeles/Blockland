@@ -10,21 +10,19 @@ namespace Blockland {
     #region Methods
 
     /// <summary>
-    /// Loads all the necessary resources from the disk.
-    /// </summary>
-    public void LoadAll() {
-      // TODO
-    }
-
-    /// <summary>
     /// Get a resource.
     /// </summary>
     /// <param name="name">Name of the resource</param>
     /// <returns>Requested resource</returns>
-    public IResource this[string name] {
-      get {
-        return mResources[name];
-      }
+    public static IResource Get(string name) {
+      return mResources[name];
+    }
+
+    /// <summary>
+    /// Loads all the necessary resources from the disk.
+    /// </summary>
+    public static void LoadAll() {
+      // TODO
     }
 
     #endregion Methods

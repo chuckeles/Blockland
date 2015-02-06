@@ -16,6 +16,7 @@ namespace Blockland {
     public static void Main() {
 
       Window.Create("Blockland", 1200, 800);
+      Resources.LoadAll();
 
     }
 
