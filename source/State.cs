@@ -1,138 +1,134 @@
 ﻿using OpenTK;
-using OpenTK.Input;
-using System;
 using System.Collections;
-using System.Diagnostics;
 
 namespace Blockland {
 
+  /// <summary>
+  /// Represents a state in which the program currently is.
+  /// </summary>
   public class State {
 
-    public State(Window window) {
-      mWindow = window;
-    }
+    #region Methods
 
+    /// <summary>
+    /// Add new game object to the list.
+    /// </summary>
+    /// <param name="gameObject">Game object to add</param>
     public void AddGameObject(GameObject gameObject) {
       mGameObjects.Add(gameObject);
     }
 
-    public virtual void BeginFrame() {
-      // delta time
-      mDeltaTime = mClock.ElapsedMilliseconds / 1000f - mLastTime;
-      mLastTime = mClock.ElapsedMilliseconds / 1000f;
-
-      // clear window
-      mWindow.Clear();
-    }
-
+    /// <summary>
+    /// End the state.
+    /// </summary>
     public virtual void End() {
-      mWindow.NativeWindow.MouseDown -= OnMouseDown;
+      Program.Events.End();
 
-      mCurrent = null;
+      RemoveGameObject(mCamera);
+      mCamera = new GameObject();
+
+      mRunning = false;
     }
 
-    public virtual void EndFrame() {
-      mWindow.Display();
-
-      if (!mWindow.Open)
-        End();
-    }
-
-    public virtual void Frame() {
-      // remove objects
-      foreach (GameObject gameObject in mToRemove)
-        mGameObjects.Remove(gameObject);
-      mToRemove.Clear();
-
-      // update camera
-      mCamera.Update(mDeltaTime);
-
-      // update objects
-      foreach (GameObject gameObject in mGameObjects)
-        gameObject.Update(mDeltaTime);
-
-      // update view
-      Transform cameraTransform = mCamera["Transform"] as Transform;
-      Matrix4 view = cameraTransform.Matrix.Inverted();
-      ShaderProgram.Current.Uniform("View", ref view);
-
-      // draw camera
-      mCamera.Draw();
-
-      // draw objects
-      foreach (GameObject gameObject in mGameObjects)
-        gameObject.Draw();
-    }
-
+    /// <summary>
+    /// Remove existing game object from the list.
+    /// </summary>
+    /// <param name="gameObject">Game object to remove</param>
     public void RemoveGameObject(GameObject gameObject) {
       mToRemove.Add(gameObject);
     }
 
+    /// <summary>
+    /// Start the state.
+    /// </summary>
     public virtual void Start() {
-      // set current
-      if (mCurrent != null)
-        mCurrent.End();
+      mRunning = true;
 
-      mCurrent = this;
+      mCamera.AddComponent(new Transform());
+      mCamera.AddComponent(new Camera());
 
-      // set up camera
-      Camera camera = new Camera();
+      AddGameObject(mCamera);
 
-      mCamera.AddComponent(new Transform(0f, 20f, 40f));
-      mCamera.AddComponent(camera);
-
-      mWindow.NativeWindow.MouseDown += OnMouseDown;
-
-      // start clock
-      mClock.Start();
+      Program.Events.Start();
     }
 
-    public static State Current {
+    /// <summary>
+    /// Update the state.
+    /// </summary>
+    /// <param name="deltaTime">Delta time since last update.</param>
+    public virtual void Update(float deltaTime) {
+      foreach (GameObject gameObject in mToRemove)
+        mGameObjects.Remove(gameObject);
+      mToRemove.Clear();
+
+      Program.Events.Update(deltaTime);
+
+      Matrix4 view = (mCamera["Transform"] as Transform).Matrix;
+      view.Invert();
+      ShaderProgram.Current.Uniform("View", ref view);
+
+      Program.Events.Clear();
+      Program.Events.Render();
+      Program.Events.Display();
+    }
+
+    #endregion Methods
+
+    #region Properties
+
+    /// <summary>
+    /// Get camera object.
+    /// </summary>
+    public GameObject Camera {
       get {
-        return mCurrent;
+        return mCamera;
       }
     }
 
+    /// <summary>
+    /// Get list of game objects.
+    /// </summary>
     public ArrayList GameObjects {
       get {
         return mGameObjects;
       }
     }
 
+    /// <summary>
+    /// Check if the state is running.
+    /// </summary>
     public bool Running {
       get {
-        return mCurrent == this;
+        return mRunning;
       }
     }
 
-    public Window Window {
-      get {
-        return mWindow;
-      }
-    }
+    #endregion Properties
 
-    protected static State mCurrent;
+    #region Fields
 
+    /// <summary>
+    /// The camera object.
+    /// </summary>
     protected GameObject mCamera = new GameObject();
 
-    protected float mDeltaTime = 0f;
-
+    /// <summary>
+    /// List of game objects.
+    /// </summary>
     protected ArrayList mGameObjects = new ArrayList();
 
-    protected Window mWindow;
+    /// <summary>
+    /// Whether the state is running.
+    /// </summary>
+    private bool mRunning = false;
 
-    private void OnMouseDown(object sender, MouseButtonEventArgs e) {
-      Camera camera = mCamera["Camera"] as Camera;
-
-      if (e.Button == MouseButton.Left) {
-        camera.MouseLock = !camera.MouseLock;
-        mWindow.MouseVisible = !camera.MouseLock;
-      }
-    }
-
-    private Stopwatch mClock = new Stopwatch();
-    private float mLastTime = 0f;
+    /// <summary>
+    /// List of game objects to remove.
+    /// </summary>
     private ArrayList mToRemove = new ArrayList();
+
+    #endregion Fields
+
   }
 
 }

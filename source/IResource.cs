@@ -1,9 +1,12 @@
-﻿namespace Blockland {
+﻿using System;
+
+namespace Blockland {
 
   /// <summary>
   /// Represents a resource that must be loaded from the harddrive.
   /// </summary>
-  public interface IResource {
+  public interface IResource
+    : IDisposable {
 
     #region Methods
 

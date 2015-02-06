@@ -8,7 +8,7 @@ namespace Blockland {
   /// OpenGL shader.
   /// </summary>
   public class Shader
-    : IDisposable, IResource {
+    : IResource {
 
     #region Types
 
