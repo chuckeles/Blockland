@@ -24,6 +24,13 @@
       get;
     }
 
+    /// <summary>
+    /// Get the resource name.
+    /// </summary>
+    string Name {
+      get;
+    }
+
     #endregion Properties
 
   }
