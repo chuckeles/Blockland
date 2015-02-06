@@ -39,9 +39,20 @@ namespace Blockland {
       GL.Enable(EnableCap.DepthTest);
       GL.ClearColor(0f, 0f, 0f, 0f);
 
+      Program.Events.OnClear += Clear;
       Program.Events.OnUpdate += Update;
+      Program.Events.OnDisplay += Display;
 
       mInstance = this;
+    }
+
+    /// <summary>
+    /// Destructor.
+    /// </summary>
+    ~Window() {
+      Program.Events.OnDisplay -= Display;
+      Program.Events.OnUpdate -= Update;
+      Program.Events.OnClear -= Clear;
     }
 
     #endregion Constructor
