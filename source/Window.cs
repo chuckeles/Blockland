@@ -49,6 +49,17 @@ namespace Blockland {
     #region Methods
 
     /// <summary>
+    /// Create a new window.
+    /// </summary>
+    /// <param name="title">Window title</param>
+    /// <param name="width">Window width, in pixels</param>
+    /// <param name="height">Window height, in pixels</param>
+    /// <exception cref="Exception">When the window already exists.</exception>
+    public static Window Create(string title, uint width = 800, uint height = 600) {
+      return new Window(title, width, height);
+    }
+
+    /// <summary>
     /// Set the mouse position to the center of the window.
     /// </summary>
     public void CenterMouse() {
@@ -67,6 +78,8 @@ namespace Blockland {
     /// </summary>
     public void Close() {
       mWindow.Close();
+
+      Program.Events.OnUpdate -= Update;
 
       mInstance = null;
     }
