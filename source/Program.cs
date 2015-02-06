@@ -15,7 +15,8 @@ namespace Blockland {
     /// </summary>
     public static void Main() {
 
-      Window window = new Window("Blockland", 1200, 800);
+      Window.Create("Blockland", 1200, 800);
+
       ShaderProgram shader = new ShaderProgram();
       Shader vertexShader = new Shader(ShaderType.VertexShader, "shaders/vertex.glsl");
       Shader fragmentShader = new Shader(ShaderType.FragmentShader, "shaders/fragment.glsl");
@@ -25,7 +26,7 @@ namespace Blockland {
       shader.Link();
       shader.Use();
 
-      State state = new StatePrepare(window);
+      State state = new StatePrepare(Window.Instance);
       state.Start();
 
       while (State.Current != null) {

@@ -12,32 +12,8 @@ namespace Blockland {
       mWindow = window;
     }
 
-    public virtual void Start() {
-      // set current
-      if (mCurrent != null)
-        mCurrent.End();
-
-      mCurrent = this;
-
-      // set up camera
-      Camera camera = new Camera();
-
-      mCamera.AddComponent(new Transform(0f, 20f, 40f));
-      mCamera.AddComponent(camera);
-
-      mWindow.NativeWindow.MouseDown += OnMouseDown;
-
-      // start clock
-      mClock.Start();
-    }
-
-    private void OnMouseDown(object sender, MouseButtonEventArgs e) {
-      Camera camera = mCamera["Camera"] as Camera;
-
-      if (e.Button == MouseButton.Left) {
-        camera.MouseLock = !camera.MouseLock;
-        mWindow.MouseVisible = !camera.MouseLock;
-      }
+    public void AddGameObject(GameObject gameObject) {
+      mGameObjects.Add(gameObject);
     }
 
     public virtual void BeginFrame() {
@@ -47,6 +23,19 @@ namespace Blockland {
 
       // clear window
       mWindow.Clear();
+    }
+
+    public virtual void End() {
+      mWindow.NativeWindow.MouseDown -= OnMouseDown;
+
+      mCurrent = null;
+    }
+
+    public virtual void EndFrame() {
+      mWindow.Display();
+
+      if (!mWindow.Open)
+        End();
     }
 
     public virtual void Frame() {
@@ -75,31 +64,32 @@ namespace Blockland {
         gameObject.Draw();
     }
 
-    public virtual void EndFrame() {
-      mWindow.Display();
-      mWindow.ProcessEvents();
-
-      if (!mWindow.Open)
-        End();
-    }
-
-    public virtual void End() {
-      mWindow.NativeWindow.MouseDown -= OnMouseDown;
-
-      mCurrent = null;
-    }
-
-    public void AddGameObject(GameObject gameObject) {
-      mGameObjects.Add(gameObject);
-    }
-
     public void RemoveGameObject(GameObject gameObject) {
       mToRemove.Add(gameObject);
     }
 
-    public Window Window {
+    public virtual void Start() {
+      // set current
+      if (mCurrent != null)
+        mCurrent.End();
+
+      mCurrent = this;
+
+      // set up camera
+      Camera camera = new Camera();
+
+      mCamera.AddComponent(new Transform(0f, 20f, 40f));
+      mCamera.AddComponent(camera);
+
+      mWindow.NativeWindow.MouseDown += OnMouseDown;
+
+      // start clock
+      mClock.Start();
+    }
+
+    public static State Current {
       get {
-        return mWindow;
+        return mCurrent;
       }
     }
 
@@ -115,23 +105,34 @@ namespace Blockland {
       }
     }
 
-    public static State Current {
+    public Window Window {
       get {
-        return mCurrent;
+        return mWindow;
       }
     }
 
-    protected Window mWindow;
+    protected static State mCurrent;
+
     protected GameObject mCamera = new GameObject();
+
+    protected float mDeltaTime = 0f;
+
     protected ArrayList mGameObjects = new ArrayList();
-    private ArrayList mToRemove = new ArrayList();
+
+    protected Window mWindow;
+
+    private void OnMouseDown(object sender, MouseButtonEventArgs e) {
+      Camera camera = mCamera["Camera"] as Camera;
+
+      if (e.Button == MouseButton.Left) {
+        camera.MouseLock = !camera.MouseLock;
+        mWindow.MouseVisible = !camera.MouseLock;
+      }
+    }
 
     private Stopwatch mClock = new Stopwatch();
     private float mLastTime = 0f;
-    protected float mDeltaTime = 0f;
-
-    protected static State mCurrent;
-
+    private ArrayList mToRemove = new ArrayList();
   }
 
 }
