@@ -48,9 +48,9 @@ namespace Blockland {
       GL.UniformMatrix4(uniform, false, ref matrix);
     }
 
-    public void Attribute(string name, int size, int stride, int offset) {
+    public void Attribute(string name, int size, int stride = 0, int offset = 0) {
       int attrib = GL.GetAttribLocation(mId, name);
-      GL.VertexAttribPointer(attrib, size, VertexAttribPointerType.Float, false, stride, offset);
+      GL.VertexAttribPointer(attrib, size, VertexAttribPointerType.Float, false, sizeof(float) * stride, sizeof(float) * offset);
       GL.EnableVertexAttribArray(attrib);
     }
 

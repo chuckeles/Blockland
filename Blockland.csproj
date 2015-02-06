@@ -80,6 +80,7 @@
     <Compile Include="source\State.cs" />
     <Compile Include="source\StateGame.cs" />
     <Compile Include="source\StatePrepare.cs" />
+    <Compile Include="source\Texture.cs" />
     <Compile Include="source\Transform.cs" />
     <Compile Include="source\Vector3i.cs" />
     <Compile Include="source\Window.cs" />
