@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using System.Collections;
+using System.Diagnostics;
 
 namespace Blockland {
 
@@ -9,6 +10,45 @@ namespace Blockland {
   public class State {
 
     #region Methods
+
+    /// <summary>
+    /// Add new state to the state queue.
+    /// </summary>
+    /// <param name="state">State to add</param>
+    public static void Add(State state) {
+      mStates.Enqueue(state);
+    }
+
+    /// <summary>
+    /// Execute all the states in the queue.
+    /// </summary>
+    public static void Run() {
+      Stopwatch clock = Stopwatch.StartNew();
+      float lastTime = 0f;
+
+      while (true) {
+
+        if (mCurrent != null) {
+          if (mCurrent.Running) {
+            float deltaTime = clock.ElapsedMilliseconds / 1000f - lastTime;
+            lastTime = clock.ElapsedMilliseconds / 1000f;
+
+            mCurrent.Update(deltaTime);
+          }
+          else
+            mCurrent = null;
+        }
+        else {
+          if (mStates.Count > 0) {
+            mCurrent = mStates.Dequeue() as State;
+            mCurrent.Start();
+          }
+          else
+            break;
+        }
+
+      }
+    }
 
     /// <summary>
     /// Add new game object to the list.
@@ -77,6 +117,15 @@ namespace Blockland {
     #region Properties
 
     /// <summary>
+    /// Get current program state.
+    /// </summary>
+    public static State Current {
+      get {
+        return mCurrent;
+      }
+    }
+
+    /// <summary>
     /// Get camera object.
     /// </summary>
     public GameObject Camera {
@@ -116,6 +165,16 @@ namespace Blockland {
     /// List of game objects.
     /// </summary>
     protected ArrayList mGameObjects = new ArrayList();
+
+    /// <summary>
+    /// Current program state.
+    /// </summary>
+    private static State mCurrent;
+
+    /// <summary>
+    /// Queue of program states.
+    /// </summary>
+    private static Queue mStates = new Queue();
 
     /// <summary>
     /// Whether the state is running.
