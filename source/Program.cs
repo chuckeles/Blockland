@@ -3,8 +3,16 @@ using System;
 
 namespace Blockland {
 
+  /// <summary>
+  /// Represents the Blockland program. Contains program-wide events and the state of the program.
+  /// </summary>
   public class Program {
 
+    #region Methods
+
+    /// <summary>
+    /// Program entry point.
+    /// </summary>
     public static void Main() {
 
       Window window = new Window("Blockland", 1200, 800);
@@ -30,6 +38,22 @@ namespace Blockland {
       GC.KeepAlive(vertexShader);
 
     }
+
+    #endregion Methods
+
+    #region Fields
+
+    /// <summary>
+    /// Program-wide events.
+    /// </summary>
+    public static Events Events = new Events();
+
+    /// <summary>
+    /// Current state of the program.
+    /// </summary>
+    public static State State;
+
+    #endregion Fields
 
   }
 
