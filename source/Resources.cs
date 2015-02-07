@@ -35,6 +35,7 @@ namespace Blockland {
       shader.Link();
 
       shader.Use();
+      shader.Uniform("Texture", 0);
 
       mResources.Add(vertexShader.Name, vertexShader);
       mResources.Add(fragmentShader.Name, fragmentShader);
@@ -45,7 +46,6 @@ namespace Blockland {
       blockTexture.Load("textures/Grass.png");
 
       blockTexture.Use(0);
-      ShaderProgram.Current.Uniform("Texture", 0);
 
       mResources.Add(blockTexture.Name, blockTexture);
     }
