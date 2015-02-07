@@ -1,4 +1,4 @@
-﻿using System;
+﻿using OpenTK.Input;
 
 namespace Blockland {
 
@@ -13,6 +13,18 @@ namespace Blockland {
     /// Generic event handler without parameters.
     /// </summary>
     public delegate void Event();
+
+    /// <summary>
+    /// Key event is fired when a key is pressed or released.
+    /// </summary>
+    /// <param name="key"></param>
+    public delegate void KeyEvent(KeyboardKeyEventArgs key);
+
+    /// <summary>
+    /// Mouse button event is fired when a mouse button is pressed or released.
+    /// </summary>
+    /// <param name="button"></param>
+    public delegate void MouseButtonEvent(MouseButtonEventArgs button);
 
     /// <summary>
     /// Update event is fired once per frame.
@@ -46,6 +58,42 @@ namespace Blockland {
     public void End() {
       if (OnEnd != null)
         OnEnd();
+    }
+
+    /// <summary>
+    /// Fire the key down event.
+    /// </summary>
+    /// <param name="key">Key event</param>
+    public void KeyDown(KeyboardKeyEventArgs key) {
+      if (OnKeyDown != null)
+        OnKeyDown(key);
+    }
+
+    /// <summary>
+    /// Fire the key up event.
+    /// </summary>
+    /// <param name="key">Key event</param>
+    public void KeyUp(KeyboardKeyEventArgs key) {
+      if (OnKeyUp != null)
+        OnKeyUp(key);
+    }
+
+    /// <summary>
+    /// Fire the mouse button down event.
+    /// </summary>
+    /// <param name="button">Mouse button event.</param>
+    public void MouseButtonDown(MouseButtonEventArgs button) {
+      if (OnMouseButtonDown != null)
+        OnMouseButtonDown(button);
+    }
+
+    /// <summary>
+    /// Fire the mouse button up event.
+    /// </summary>
+    /// <param name="button">Mouse button event.</param>
+    public void MouseButtonUp(MouseButtonEventArgs button) {
+      if (OnMouseButtonUp != null)
+        OnMouseButtonUp(button);
     }
 
     /// <summary>
@@ -92,6 +140,26 @@ namespace Blockland {
     /// Fired when current state is ending.
     /// </summary>
     public event Event OnEnd;
+
+    /// <summary>
+    /// Fired when a key is pressed.
+    /// </summary>
+    public event KeyEvent OnKeyDown;
+
+    /// <summary>
+    /// Fired when a key is released.
+    /// </summary>
+    public event KeyEvent OnKeyUp;
+
+    /// <summary>
+    /// Fired when a mouse button is pressed.
+    /// </summary>
+    public event MouseButtonEvent OnMouseButtonDown;
+
+    /// <summary>
+    /// Fired when a mouse button is released.
+    /// </summary>
+    public event MouseButtonEvent OnMouseButtonUp;
 
     /// <summary>
     /// Render event is fired once per frame after the update event. Objects can draw to the window.

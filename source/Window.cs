@@ -43,6 +43,11 @@ namespace Blockland {
       Program.Events.OnUpdate += Update;
       Program.Events.OnDisplay += Display;
 
+      mWindow.KeyDown += KeyDown;
+      mWindow.KeyUp += KeyUp;
+      mWindow.MouseDown += MouseDown;
+      mWindow.MouseUp += MouseUp;
+
       mInstance = this;
     }
 
@@ -111,6 +116,42 @@ namespace Blockland {
     }
 
     /// <summary>
+    /// Fire the key down event.
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Event</param>
+    private void KeyDown(object sender, KeyboardKeyEventArgs e) {
+      Program.Events.KeyDown(e);
+    }
+
+    /// <summary>
+    /// Fire the key up event.
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Event</param>
+    private void KeyUp(object sender, KeyboardKeyEventArgs e) {
+      Program.Events.KeyUp(e);
+    }
+
+    /// <summary>
+    /// Fire the mouse button down event.
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Event</param>
+    private void MouseDown(object sender, MouseButtonEventArgs e) {
+      Program.Events.MouseButtonDown(e);
+    }
+
+    /// <summary>
+    /// Fire the mouse button up event.
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Event</param>
+    private void MouseUp(object sender, MouseButtonEventArgs e) {
+      Program.Events.MouseButtonUp(e);
+    }
+
+    /// <summary>
     /// Process window events.
     /// </summary>
     /// <param name="deltaTime">Delta time</param>
@@ -155,6 +196,7 @@ namespace Blockland {
     /// <summary>
     /// Get underlying native window.
     /// </summary>
+    [Obsolete("Use Program.Events instead")]
     public NativeWindow NativeWindow {
       get {
         return mWindow;
