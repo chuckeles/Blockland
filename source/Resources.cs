@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Blockland {
 
@@ -34,6 +35,15 @@ namespace Blockland {
       shader.Link();
 
       shader.Use();
+
+      mResources.Add(vertexShader.Name, vertexShader);
+      mResources.Add(fragmentShader.Name, fragmentShader);
+
+      string[] textures = Directory.GetFiles("textures");
+      foreach (string texture in textures) {
+        Texture resource = new Texture(texture, texture);
+        mResources.Add(resource.Name, resource);
+      }
     }
 
     #endregion Methods
