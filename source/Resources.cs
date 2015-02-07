@@ -22,10 +22,10 @@ namespace Blockland {
     /// Loads all the necessary resources from the disk.
     /// </summary>
     public static void LoadAll() {
-      Shader vertexShader = new Shader("shaders/vertex.glsl", Shader.Type.Vertex);
+      Shader vertexShader = new Shader("VertexShader", Shader.Type.Vertex, "shaders/vertex.glsl");
       vertexShader.Compile();
 
-      Shader fragmentShader = new Shader("shaders/fragment.glsl", Shader.Type.Fragment);
+      Shader fragmentShader = new Shader("FragmentShader", Shader.Type.Fragment, "shaders/fragment.glsl");
       fragmentShader.Compile();
 
       ShaderProgram shader = new ShaderProgram();

@@ -16,17 +16,18 @@ namespace Blockland {
     public override void End() {
       base.End();
 
-      Window.Instance.NativeWindow.KeyDown -= OnEscape;
+      Program.Events.OnKeyDown -= Escape;
     }
 
     /// <summary>
     /// Event listener for escape key event.
     /// </summary>
-    /// <param name="sender">Sender</param>
-    /// <param name="e">Key event</param>
-    public void OnEscape(object sender, KeyboardKeyEventArgs e) {
-      if (e.Key == Key.Escape)
+    /// <param name="key">Key event</param>
+    public void Escape(KeyboardKeyEventArgs key) {
+      if (key.Key == Key.Escape) {
         Window.Instance.Close();
+        End();
+      }
     }
 
     /// <summary>
@@ -35,7 +36,7 @@ namespace Blockland {
     public override void Start() {
       base.Start();
 
-      Window.Instance.NativeWindow.KeyDown += OnEscape;
+      Program.Events.OnKeyDown += Escape;
 
       int blocks = 8;
       mWorld.Create(blocks, 8);

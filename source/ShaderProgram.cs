@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
+using System.Collections;
 
 namespace Blockland {
 
@@ -38,6 +39,8 @@ namespace Blockland {
     /// <param name="shader"></param>
     public void Attach(Shader shader) {
       GL.AttachShader(mId, shader.Id);
+
+      mShaders.Add(shader);
     }
 
     /// <summary>
@@ -78,6 +81,8 @@ namespace Blockland {
       if (mId != 0) {
         GL.DeleteProgram(mId);
         mId = 0;
+
+        mShaders.Clear();
       }
     }
 
@@ -168,6 +173,11 @@ namespace Blockland {
     /// OpenGL id.
     /// </summary>
     private int mId = 0;
+
+    /// <summary>
+    /// List of attached shaders.
+    /// </summary>
+    private ArrayList mShaders = new ArrayList();
 
     #endregion Fields
   }
