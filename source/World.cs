@@ -5,21 +5,53 @@ using System.Threading;
 
 namespace Blockland {
 
+  /// <summary>
+  /// World is essencially a collection of chunks
+  /// </summary>
   public class World {
 
+    #region Types
+
+    /// <summary>
+    /// Contains information about a chunk that needs to be processed by the main thread.
+    /// </summary>
     public struct ChunkToBuild {
 
+      /// <summary>
+      /// Constructor.
+      /// </summary>
+      /// <param name="chunk">Chunk</param>
+      /// <param name="vertices">Vertices to upload</param>
+      /// <param name="elements">Elements to upload</param>
       public ChunkToBuild(Chunk chunk, float[] vertices, uint[] elements) {
         Chunk = chunk;
         Vertices = vertices;
         Elements = elements;
       }
 
+      /// <summary>
+      /// Elements to upload
+      /// </summary>
       public uint[] Elements;
+
+      /// <summary>
+      /// Chunk
+      /// </summary>
       public Chunk Chunk;
+
+      /// <summary>
+      /// Vertices to upload
+      /// </summary>
       public float[] Vertices;
     }
 
+    #endregion Types
+
+    #region Constructor
+
+    /// <summary>
+    /// Create a new world.
+    /// </summary>
     public World() {
       mPerlin = new FastNoise((int)(Random.Value * int.MaxValue));
       mPerlin.Frequency = 1 / 128f;
@@ -32,6 +64,16 @@ namespace Blockland {
       Program.Events.OnUpdate += Update;
     }
 
+    #endregion Constructor
+
+    #region Method
+
+    /// <summary>
+    /// Build a chunk. That means to generate a geometry from chunk's blocks.
+    /// </summary>
+    /// <param name="chunk">Chunk to build</param>
+    /// <param name="chunks">All the loaded chunks</param>
+    /// <param name="buildQueue">Queue where to put built chunks</param>
     public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks, Queue<ChunkToBuild> buildQueue) {
       bool worldBoundaries = false;
 
@@ -242,6 +284,13 @@ namespace Blockland {
       }
     }
 
+    /// <summary>
+    /// Generate chunk's blocks.
+    /// </summary>
+    /// <param name="chunk">Chunk to generate</param>
+    /// <param name="height">World height in chunk coordinates</param>
+    /// <param name="perlin">Perlin noise generator</param>
+    /// <param name="ridged">Ridged multifractal noise generator</param>
     public static void GenerateChunk(Chunk chunk, int height, FastNoise perlin, FastRidgedMultifractal ridged) {
       for (int x = 0; x < Chunk.Size; ++x)
         for (int z = 0; z < Chunk.Size; ++z) {
@@ -280,6 +329,10 @@ namespace Blockland {
       chunk.CurrentState = Chunk.State.Generated;
     }
 
+    /// <summary>
+    /// Entry point to worker threads.
+    /// </summary>
+    /// <param name="parameter">World</param>
     public static void Worker(object parameter) {
       World world = parameter as World;
 
@@ -317,6 +370,11 @@ namespace Blockland {
 
     }
 
+    /// <summary>
+    /// Start generating and building the world.
+    /// </summary>
+    /// <param name="size">Number of chunks on x and z axis</param>
+    /// <param name="height">Number of chunks on y axis</param>
     public void Create(int size, int height) {
       mHeight = height;
 
@@ -335,6 +393,11 @@ namespace Blockland {
         (new Thread(Worker)).Start(this);
     }
 
+    /// <summary>
+    /// Update the world. Processes chunks that need to be processed by the main thread (uploading
+    /// vertices and elements).
+    /// </summary>
+    /// <param name="deltaTime">Delta time (not used)</param>
     public void Update(float deltaTime) {
       lock (mChunksToBuild) {
         if (mChunksToBuild.Count > 0) {
@@ -361,12 +424,41 @@ namespace Blockland {
       }
     }
 
+    #endregion Method
+
+    #region Fields
+
+    /// <summary>
+    /// World height, in chunks.
+    /// </summary>
     private int mHeight;
+
+    /// <summary>
+    /// Dictionary of chunks.
+    /// </summary>
     private Dictionary<Vector3i, Chunk> mChunks = new Dictionary<Vector3i, Chunk>();
+
+    /// <summary>
+    /// Queue of chunks that need to be processed in the main thread.
+    /// </summary>
     private Queue<ChunkToBuild> mChunksToBuild = new Queue<ChunkToBuild>();
+
+    /// <summary>
+    /// Queue of chunks that need to be processed by a worker.
+    /// </summary>
     private Queue<Chunk> mChunksToProcess = new Queue<Chunk>();
+
+    /// <summary>
+    /// Perlin noise generator.
+    /// </summary>
     private FastNoise mPerlin;
+
+    /// <summary>
+    /// Ridged multifractal noise generator.
+    /// </summary>
     private FastRidgedMultifractal mRidged;
+
+    #endregion Fields
 
   }
 
