@@ -106,10 +106,6 @@ namespace Blockland {
       if (!mRunning)
         return;
 
-      Matrix4 view = (mCamera["Transform"] as Transform).Matrix;
-      view.Invert();
-      ShaderProgram.Current.Uniform("View", ref view);
-
       Program.Events.Clear();
       Program.Events.Render();
       Program.Events.Display();
