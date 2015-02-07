@@ -5,7 +5,7 @@ namespace Blockland {
   /// <summary>
   /// Main game state. Runs the game loop.
   /// </summary>
-  public class StateGame
+  public class GameState
     : State {
 
     #region Methods

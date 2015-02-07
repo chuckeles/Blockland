@@ -5,7 +5,7 @@ namespace Blockland {
   /// <summary>
   /// Program state to prepare program before any execution. Currently only sets up the projection matrix.
   /// </summary>
-  public class StatePrepare
+  public class PrepareState
     : State {
 
     #region Methods

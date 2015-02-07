@@ -15,8 +15,8 @@
       Window.Create("Blockland", 1200, 800);
       Resources.LoadAll();
 
-      State.Add(new StatePrepare());
-      State.Add(new StateGame());
+      State.Add(new PrepareState());
+      State.Add(new GameState());
       State.Run();
 
     }
