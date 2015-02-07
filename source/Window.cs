@@ -111,7 +111,7 @@ namespace Blockland {
     /// Tell OpenGL to render bound buffers.
     /// </summary>
     /// <param name="count">Number of elements</param>
-    public void DrawTriangles(int count) {
+    public void RenderTriangles(int count) {
       GL.DrawElements(BeginMode.Triangles, count, DrawElementsType.UnsignedInt, 0);
     }
 

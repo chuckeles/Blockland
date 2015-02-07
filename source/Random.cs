@@ -1,6 +1,4 @@
-﻿using OpenTK;
-
-namespace Blockland {
+﻿namespace Blockland {
 
   /// <summary>
   /// Helper class for random numbers.
