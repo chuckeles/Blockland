@@ -22,7 +22,18 @@ namespace Blockland {
     /// Loads all the necessary resources from the disk.
     /// </summary>
     public static void LoadAll() {
-      // TODO
+      Shader vertexShader = new Shader("shaders/vertex.glsl", Shader.Type.Vertex);
+      vertexShader.Compile();
+
+      Shader fragmentShader = new Shader("shaders/fragment.glsl", Shader.Type.Fragment);
+      fragmentShader.Compile();
+
+      ShaderProgram shader = new ShaderProgram();
+      shader.Attach(vertexShader);
+      shader.Attach(fragmentShader);
+      shader.Link();
+
+      shader.Use();
     }
 
     #endregion Methods
