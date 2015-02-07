@@ -28,7 +28,11 @@ namespace Blockland {
     /// Create a new shader.
     /// </summary>
     /// <param name="type">Shader type</param>
+    /// <exception cref="ArgumentNullException">When empty name is supplied</exception>
     public Shader(string name, Type type) {
+      if (name == "")
+        throw new ArgumentNullException("Resource needs a name");
+
       mType = type;
       mName = name;
     }
@@ -63,7 +67,7 @@ namespace Blockland {
       GL.CompileShader(mId);
 
       if (!Compiled)
-        throw new Exception("Shader " + mId + " failed to compile");
+        throw new exce("Shader " + mId + " failed to compile");
     }
 
     /// <summary>
@@ -98,12 +102,17 @@ namespace Blockland {
     /// </summary>
     /// <param name="fileName">Source file</param>
     public void Load(string fileName) {
+      if (mLoaded)
+        return;
+
       StreamReader file = new StreamReader(fileName);
       string code = file.ReadToEnd();
       file.Close();
 
       mId = GL.CreateShader(mType == Type.Vertex ? ShaderType.VertexShader : ShaderType.FragmentShader);
       GL.ShaderSource(mId, code);
+
+      mLoaded = true;
     }
 
     #endregion Methods
@@ -140,7 +149,7 @@ namespace Blockland {
     /// </summary>
     public bool Loaded {
       get {
-        return Compiled;
+        return mLoaded;
       }
     }
 
@@ -161,6 +170,11 @@ namespace Blockland {
     /// OpenGL shader id.
     /// </summary>
     private int mId = 0;
+
+    /// <summary>
+    /// Whether the resource is loaded.
+    /// </summary>
+    private bool mLoaded = false;
 
     /// <summary>
     /// Resource name.

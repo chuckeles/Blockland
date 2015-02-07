@@ -34,10 +34,10 @@ namespace Blockland {
     /// Add a new component to the game object.
     /// </summary>
     /// <param name="component">Component to add</param>
-    /// <exception cref="Exception">When it already contains component</exception>
+    /// <exception cref="ArgumentException">When it already contains component</exception>
     public void AddComponent(Component component) {
       if (HasComponent(component.Name))
-        throw new Exception("Component already added");
+        throw new ArgumentException("Component already added");
 
       mComponents.Add(component.Name, component);
       component.Attached(this);

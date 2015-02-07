@@ -13,10 +13,10 @@ namespace Blockland {
     /// Create a new game object component.
     /// </summary>
     /// <param name="name">Component name</param>
-    /// <exception cref="Exception">If the name is empty</exception>
+    /// <exception cref="ArgumentNullException">If the name is empty</exception>
     public Component(string name) {
       if (name == "")
-        throw new Exception("Component needs a name");
+        throw new ArgumentNullException("Component needs a name");
 
       mName = name;
     }
