@@ -1,22 +1,53 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using System;
 
 namespace Blockland {
 
-  public class ArrayObject {
+  /// <summary>
+  /// Represents an OpenGL array buffer object.
+  /// </summary>
+  public class ArrayObject
+    : IDisposable {
 
+    #region Constructor
+
+    /// <summary>
+    /// Create new array object.
+    /// </summary>
+    /// <seealso cref="Create" />
     public ArrayObject() {
       Create();
     }
 
+    /// <summary>
+    /// Destructor.
+    /// </summary>
     ~ArrayObject() {
       if (Window.Instance != null && Window.Instance.Open)
-        Destroy();
+        Dispose();
     }
 
+    #endregion Constructor
+
+    #region Methods
+
+    /// <summary>
+    /// Bind array object.
+    /// </summary>
+    public void Bind() {
+      GL.BindVertexArray(mId);
+    }
+
+    /// <summary>
+    /// Create new array object.
+    /// </summary>
     public void Create() {
       mId = GL.GenVertexArray();
     }
 
+    /// <summary>
+    /// Destroy array object and free it from the memory.
+    /// </summary>
     public void Destroy() {
       if (mId != 0) {
         GL.DeleteVertexArray(mId);
@@ -24,11 +55,24 @@ namespace Blockland {
       }
     }
 
-    public void Bind() {
-      GL.BindVertexArray(mId);
+    /// <summary>
+    /// Free the object from memory.
+    /// </summary>
+    /// <seealso cref="Destroy" />
+    public void Dispose() {
+      Destroy();
     }
 
+    #endregion Methods
+
+    #region Fields
+
+    /// <summary>
+    /// OpenGL id.
+    /// </summary>
     private int mId = 0;
+
+    #endregion Fields
 
   }
 

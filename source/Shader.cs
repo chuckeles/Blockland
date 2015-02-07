@@ -4,43 +4,61 @@ using System.IO;
 
 namespace Blockland {
 
-  public class Shader {
+  /// <summary>
+  /// OpenGL shader.
+  /// </summary>
+  public class Shader
+    : IResource {
 
-    public Shader(ShaderType type) {
-      mType = type;
+    #region Types
+
+    /// <summary>
+    /// Enum for shader type.
+    /// </summary>
+    public enum Type {
+      Vertex,
+      Fragment
     }
 
-    public Shader(ShaderType type, string fileName)
-      : this(type) {
+    #endregion Types
+
+    #region Constructor
+
+    /// <summary>
+    /// Create a new shader.
+    /// </summary>
+    /// <param name="type">Shader type</param>
+    public Shader(string name, Type type) {
+      mType = type;
+      mName = name;
+    }
+
+    /// <summary>
+    /// Create a new shader, load and compile it.
+    /// </summary>
+    /// <param name="type">Shader type</param>
+    /// <param name="fileName">Source file</param>
+    public Shader(string name, Type type, string fileName)
+      : this(name, type) {
       Create(fileName);
     }
 
+    /// <summary>
+    /// Destructor.
+    /// </summary>
     ~Shader() {
       if (Window.Instance != null && Window.Instance.Open)
-        Destroy();
+        Dispose();
     }
 
-    public void Create(string fileName) {
-      Load(fileName);
-      Compile();
-    }
+    #endregion Constructor
 
-    public void Destroy() {
-      if (mId != 0) {
-        GL.DeleteShader(mId);
-        mId = 0;
-      }
-    }
+    #region Methods
 
-    public void Load(string fileName) {
-      StreamReader file = new StreamReader(fileName);
-      string code = file.ReadToEnd();
-      file.Close();
-
-      mId = GL.CreateShader(mType);
-      GL.ShaderSource(mId, code);
-    }
-
+    /// <summary>
+    /// Compile the shader.
+    /// </summary>
+    /// <exception cref="Exception">When the shader fails to compile</exception>
     public void Compile() {
       GL.CompileShader(mId);
 
@@ -48,6 +66,53 @@ namespace Blockland {
         throw new Exception("Shader " + mId + " failed to compile");
     }
 
+    /// <summary>
+    /// Load and compile the shader.
+    /// </summary>
+    /// <param name="fileName">Source file</param>
+    public void Create(string fileName) {
+      Load(fileName);
+      Compile();
+    }
+
+    /// <summary>
+    /// Destroy the shader and release it from memory.
+    /// </summary>
+    public void Destroy() {
+      if (mId != 0) {
+        GL.DeleteShader(mId);
+        mId = 0;
+      }
+    }
+
+    /// <summary>
+    /// Release the shader from memory.
+    /// </summary>
+    /// <seealso cref="Destroy" />
+    public void Dispose() {
+      Destroy();
+    }
+
+    /// <summary>
+    /// Load shader code from a file.
+    /// </summary>
+    /// <param name="fileName">Source file</param>
+    public void Load(string fileName) {
+      StreamReader file = new StreamReader(fileName);
+      string code = file.ReadToEnd();
+      file.Close();
+
+      mId = GL.CreateShader(mType == Type.Vertex ? ShaderType.VertexShader : ShaderType.FragmentShader);
+      GL.ShaderSource(mId, code);
+    }
+
+    #endregion Methods
+
+    #region Properties
+
+    /// <summary>
+    /// Check if the shader is compiled.
+    /// </summary>
     public bool Compiled {
       get {
         if (mId == 0)
@@ -61,15 +126,53 @@ namespace Blockland {
       }
     }
 
+    /// <summary>
+    /// Get OpenGL shader id.
+    /// </summary>
     public int Id {
       get {
         return mId;
       }
     }
 
-    private ShaderType mType;
+    /// <summary>
+    /// Check is the resource is loaded.
+    /// </summary>
+    public bool Loaded {
+      get {
+        return Compiled;
+      }
+    }
+
+    /// <summary>
+    /// Get resource name.
+    /// </summary>
+    public string Name {
+      get {
+        return mName;
+      }
+    }
+
+    #endregion Properties
+
+    #region Fields
+
+    /// <summary>
+    /// OpenGL shader id.
+    /// </summary>
     private int mId = 0;
 
+    /// <summary>
+    /// Resource name.
+    /// </summary>
+    private string mName;
+
+    /// <summary>
+    /// Shader type.
+    /// </summary>
+    private Type mType;
+
+    #endregion Fields
   }
 
 }
