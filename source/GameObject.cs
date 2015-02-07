@@ -3,61 +3,85 @@ using System.Collections.Generic;
 
 namespace Blockland {
 
-  public delegate void UpdateEventHandler(float deltaTime);
-  public delegate void DrawEventHandler();
-
+  /// <summary>
+  /// Game object is a container for components.
+  /// </summary>
   public class GameObject {
 
-    public GameObject() {
-      mComponents = new Dictionary<string, Component>();
-    }
+    #region Methods
 
+    /// <summary>
+    /// Add a new component to the game object.
+    /// </summary>
+    /// <param name="component">Component to add</param>
+    /// <exception cref="Exception">When it already contains component</exception>
     public void AddComponent(Component component) {
-      if (mComponents.ContainsKey(component.Name))
+      if (HasComponent(component.Name))
         throw new Exception("Component already added");
 
       mComponents.Add(component.Name, component);
       component.Attached(this);
     }
 
-    public bool HasComponent(string name) {
-      return mComponents.ContainsKey(name);
-    }
-
-    public Component GetComponent(string name) {
-      return mComponents[name];
-    }
-
-    public void RemoveComponent(string name) {
-      mComponents.Remove(name);
-    }
-
+    /// <summary>
+    /// Add transform component if the game object doesn't already have one.
+    /// </summary>
     public void EnsureTransform() {
       if (!HasComponent("Transform"))
         AddComponent(new Transform());
     }
 
-    public void Update(float deltaTime) {
-      if (OnUpdate != null)
-        OnUpdate(deltaTime);
+    /// <summary>
+    /// Get a component by name.
+    /// </summary>
+    /// <param name="name">Component name</param>
+    /// <returns>Requested component</returns>
+    public Component GetComponent(string name) {
+      return mComponents[name];
     }
 
-    public void Draw() {
-      if (OnDraw != null)
-        OnDraw();
+    /// <summary>
+    /// Check if the game object has a component.
+    /// </summary>
+    /// <param name="name">Component name</param>
+    /// <returns>True if the game object has a component</returns>
+    public bool HasComponent(string name) {
+      return mComponents.ContainsKey(name);
     }
 
+    /// <summary>
+    /// Remove component from the game object.
+    /// </summary>
+    /// <param name="name">Component name</param>
+    public void RemoveComponent(string name) {
+      mComponents.Remove(name);
+    }
+
+    #endregion Methods
+
+    #region Indexers
+
+    /// <summary>
+    /// Get a component by name.
+    /// </summary>
+    /// <param name="name">Component name</param>
+    /// <returns>Requested component</returns>
     public Component this[string name] {
       get {
         return GetComponent(name);
       }
     }
 
-    public event UpdateEventHandler OnUpdate;
-    public event DrawEventHandler OnDraw;
+    #endregion Indexers
 
-    private Dictionary<string, Component> mComponents;
+    #region Fields
 
+    /// <summary>
+    /// Dictionary of components.
+    /// </summary>
+    private Dictionary<string, Component> mComponents = new Dictionary<string, Component>();
+
+    #endregion Fields
   }
 
 }
