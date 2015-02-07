@@ -8,6 +8,26 @@ namespace Blockland {
   /// </summary>
   public class GameObject {
 
+    #region Constructor
+
+    /// <summary>
+    /// Constructor, registers for update and render events.
+    /// </summary>
+    public GameObject() {
+      Program.Events.OnUpdate += Update;
+      Program.Events.OnRender += Render;
+    }
+
+    /// <summary>
+    /// Destructor
+    /// </summary>
+    ~GameObject() {
+      Program.Events.OnRender -= Render;
+      Program.Events.OnUpdate -= Update;
+    }
+
+    #endregion Constructor
+
     #region Methods
 
     /// <summary>
@@ -62,7 +82,38 @@ namespace Blockland {
       }
     }
 
+    /// <summary>
+    /// Fires the render event.
+    /// </summary>
+    private void Render() {
+      if (OnRender != null)
+        OnRender();
+    }
+
+    /// <summary>
+    /// Fires the update event.
+    /// </summary>
+    /// <param name="deltaTime">Time since last update</param>
+    private void Update(float deltaTime) {
+      if (OnUpdate != null)
+        OnUpdate(deltaTime);
+    }
+
     #endregion Methods
+
+    #region Events
+
+    /// <summary>
+    /// Fired once per frame after the update. Only for this game object's components.
+    /// </summary>
+    public event Events.Event OnRender;
+
+    /// <summary>
+    /// Fired once per frame. Only for this game objects's components.
+    /// </summary>
+    public event Events.UpdateEvent OnUpdate;
+
+    #endregion Events
 
     #region Indexers
 
