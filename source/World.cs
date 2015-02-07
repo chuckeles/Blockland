@@ -7,6 +7,19 @@ namespace Blockland {
 
   public class World {
 
+    public struct ChunkToBuild {
+
+      public ChunkToBuild(Chunk chunk, float[] vertices, uint[] elements) {
+        Chunk = chunk;
+        Vertices = vertices;
+        Elements = elements;
+      }
+
+      public uint[] Elements;
+      public Chunk Chunk;
+      public float[] Vertices;
+    }
+
     public World() {
       mPerlin = new FastNoise((int)(Random.Value * int.MaxValue));
       mPerlin.Frequency = 1 / 128f;
@@ -15,137 +28,8 @@ namespace Blockland {
       mRidged = new FastRidgedMultifractal((int)(Random.Value * int.MaxValue));
       mRidged.Frequency = 1 / 64f;
       mRidged.OctaveCount = 4;
-    }
 
-    public struct ChunkToBuild {
-      public Chunk Chunk;
-      public float[] Vertices;
-      public uint[] Elements;
-
-      public ChunkToBuild(Chunk chunk, float[] vertices, uint[] elements) {
-        Chunk = chunk;
-        Vertices = vertices;
-        Elements = elements;
-      }
-    }
-
-    public void Create(int size, int height) {
-      mHeight = height;
-
-      // create chunks
-      for (int x = 0; x < size; ++x)
-        for (int z = 0; z < size; ++z)
-          for (int y = 0; y < height; ++y) {
-            Chunk chunk = new Chunk(x, y, z);
-            mChunks.Add(chunk.Position, chunk);
-            mChunksToProcess.Enqueue(chunk);
-          }
-
-      // spawn worker
-      uint workers = 3;
-      for (uint i = 0; i < workers; ++i)
-        (new Thread(Worker)).Start(this);
-    }
-
-    public void Update() {
-      lock (mChunksToBuild) {
-        if (mChunksToBuild.Count > 0) {
-          ChunkToBuild buildInfo = mChunksToBuild.Dequeue();
-          Chunk chunk = buildInfo.Chunk;
-
-          // copy data to buffer
-          chunk.ArrayObject.Bind();
-          chunk.Vertices.CopyData(buildInfo.Vertices, true);
-          chunk.Elements.CopyData(buildInfo.Elements, true);
-
-          ShaderProgram.Current.Attribute("inPosition", 3, 8, 0);
-          ShaderProgram.Current.Attribute("inNormal", 3, 8, 3);
-          ShaderProgram.Current.Attribute("inTexCoord", 2, 8, 6);
-
-          // create game object
-          GameObject chunkObject = new GameObject();
-
-          chunkObject.AddComponent(new Transform(chunk.Position.X * Chunk.Size * Block.Size, chunk.Position.Y * Chunk.Size * Block.Size, chunk.Position.Z * Chunk.Size * Block.Size));
-          chunkObject.AddComponent(chunk);
-
-          State.Current.AddGameObject(chunkObject);
-        }
-      }
-    }
-
-    public static void Worker(object parameter) {
-      World world = parameter as World;
-
-      while (!Interlocked.Equals(State.Current, null)) {
-        Chunk chunk;
-
-        lock (world.mChunksToProcess) {
-          if (world.mChunksToProcess.Count > 0)
-            chunk = world.mChunksToProcess.Dequeue();
-          else
-            continue;
-        }
-
-        // what to do
-        switch (chunk.CurrentState) {
-          case Chunk.State.Empty:
-            // generate
-            GenerateChunk(chunk, world.mHeight, world.mPerlin, world.mRidged);
-
-            // put to queue for processing
-            lock (world.mChunksToProcess) {
-              world.mChunksToProcess.Enqueue(chunk);
-            }
-
-            break;
-
-          case Chunk.State.Generated:
-          case Chunk.State.Dirty:
-            // build
-            BuildChunk(chunk, world.mChunks, world.mChunksToBuild);
-
-            break;
-        }
-      }
-
-    }
-
-    public static void GenerateChunk(Chunk chunk, int height, FastNoise perlin, FastRidgedMultifractal ridged) {
-      for (int x = 0; x < Chunk.Size; ++x)
-        for (int z = 0; z < Chunk.Size; ++z) {
-          float noiseHeight = (float)perlin.GetValue(
-            (x + chunk.Position.X * Chunk.Size), 0f,
-            (z + chunk.Position.Z * Chunk.Size)) * height * Chunk.Size / 3f + height * Chunk.Size / 2;
-          float localHeight = noiseHeight - chunk.Position.Y * Chunk.Size;
-
-          for (int y = 0; y < Chunk.Size; ++y) {
-            if (y < localHeight) {
-              float depth = localHeight - y;
-              float cave = (float)ridged.GetValue(
-                (x + chunk.Position.X * Chunk.Size),
-                ((y + chunk.Position.Y * Chunk.Size) * 1.5f),
-                (z + chunk.Position.Z * Chunk.Size));
-
-              float depthClapmed = (depth < 4f ? 4f : depth > Chunk.Size * 2 ? Chunk.Size * 2 : depth) / (Chunk.Size * 2);
-              cave *= 0.9f + depthClapmed * 0.1f;
-
-              if (cave > 0.8f)
-                continue;
-
-              Block.Type type = Block.Type.Stone;
-
-              if (y > localHeight - 1)
-                type = Block.Type.Grass;
-
-              else if (depth < Random.Range(4, 6))
-                type = Block.Type.Dirt;
-
-              chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
-            }
-          }
-        }
-
-      chunk.CurrentState = Chunk.State.Generated;
+      Program.Events.OnUpdate += Update;
     }
 
     public static void BuildChunk(Chunk chunk, Dictionary<Vector3i, Chunk> chunks, Queue<ChunkToBuild> buildQueue) {
@@ -358,11 +242,129 @@ namespace Blockland {
       }
     }
 
-    private Dictionary<Vector3i, Chunk> mChunks = new Dictionary<Vector3i, Chunk>();
-    private Queue<Chunk> mChunksToProcess = new Queue<Chunk>();
-    private Queue<ChunkToBuild> mChunksToBuild = new Queue<ChunkToBuild>();
-    private int mHeight;
+    public static void GenerateChunk(Chunk chunk, int height, FastNoise perlin, FastRidgedMultifractal ridged) {
+      for (int x = 0; x < Chunk.Size; ++x)
+        for (int z = 0; z < Chunk.Size; ++z) {
+          float noiseHeight = (float)perlin.GetValue(
+            (x + chunk.Position.X * Chunk.Size), 0f,
+            (z + chunk.Position.Z * Chunk.Size)) * height * Chunk.Size / 3f + height * Chunk.Size / 2;
+          float localHeight = noiseHeight - chunk.Position.Y * Chunk.Size;
 
+          for (int y = 0; y < Chunk.Size; ++y) {
+            if (y < localHeight) {
+              float depth = localHeight - y;
+              float cave = (float)ridged.GetValue(
+                (x + chunk.Position.X * Chunk.Size),
+                ((y + chunk.Position.Y * Chunk.Size) * 1.5f),
+                (z + chunk.Position.Z * Chunk.Size));
+
+              float depthClapmed = (depth < 4f ? 4f : depth > Chunk.Size * 2 ? Chunk.Size * 2 : depth) / (Chunk.Size * 2);
+              cave *= 0.9f + depthClapmed * 0.1f;
+
+              if (cave > 0.8f)
+                continue;
+
+              Block.Type type = Block.Type.Stone;
+
+              if (y > localHeight - 1)
+                type = Block.Type.Grass;
+
+              else if (depth < Random.Range(4, 6))
+                type = Block.Type.Dirt;
+
+              chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
+            }
+          }
+        }
+
+      chunk.CurrentState = Chunk.State.Generated;
+    }
+
+    public static void Worker(object parameter) {
+      World world = parameter as World;
+
+      while (!Interlocked.Equals(State.Current, null)) {
+        Chunk chunk;
+
+        lock (world.mChunksToProcess) {
+          if (world.mChunksToProcess.Count > 0)
+            chunk = world.mChunksToProcess.Dequeue();
+          else
+            continue;
+        }
+
+        // what to do
+        switch (chunk.CurrentState) {
+          case Chunk.State.Empty:
+            // generate
+            GenerateChunk(chunk, world.mHeight, world.mPerlin, world.mRidged);
+
+            // put to queue for processing
+            lock (world.mChunksToProcess) {
+              world.mChunksToProcess.Enqueue(chunk);
+            }
+
+            break;
+
+          case Chunk.State.Generated:
+          case Chunk.State.Dirty:
+            // build
+            BuildChunk(chunk, world.mChunks, world.mChunksToBuild);
+
+            break;
+        }
+      }
+
+    }
+
+    public void Create(int size, int height) {
+      mHeight = height;
+
+      // create chunks
+      for (int x = 0; x < size; ++x)
+        for (int z = 0; z < size; ++z)
+          for (int y = 0; y < height; ++y) {
+            Chunk chunk = new Chunk(x, y, z);
+            mChunks.Add(chunk.Position, chunk);
+            mChunksToProcess.Enqueue(chunk);
+          }
+
+      // spawn worker
+      uint workers = 3;
+      for (uint i = 0; i < workers; ++i)
+        (new Thread(Worker)).Start(this);
+    }
+
+    public void Update(float deltaTime) {
+      lock (mChunksToBuild) {
+        if (mChunksToBuild.Count > 0) {
+          ChunkToBuild buildInfo = mChunksToBuild.Dequeue();
+          Chunk chunk = buildInfo.Chunk;
+
+          // copy data to buffer
+          chunk.ArrayObject.Bind();
+          chunk.Vertices.CopyData(buildInfo.Vertices, true);
+          chunk.Elements.CopyData(buildInfo.Elements, true);
+
+          ShaderProgram.Current.Attribute("inPosition", 3, 8, 0);
+          ShaderProgram.Current.Attribute("inNormal", 3, 8, 3);
+          ShaderProgram.Current.Attribute("inTexCoord", 2, 8, 6);
+
+          // create game object
+          GameObject chunkObject = new GameObject();
+
+          chunkObject.AddComponent(new Transform(chunk.Position.X * Chunk.Size * Block.Size, chunk.Position.Y * Chunk.Size * Block.Size, chunk.Position.Z * Chunk.Size * Block.Size));
+          chunkObject.AddComponent(chunk);
+
+          State.Current.AddGameObject(chunkObject);
+        }
+      }
+    }
+
+    private int mHeight;
+    private Dictionary<Vector3i, Chunk> mChunks = new Dictionary<Vector3i, Chunk>();
+    private Queue<ChunkToBuild> mChunksToBuild = new Queue<ChunkToBuild>();
+    private Queue<Chunk> mChunksToProcess = new Queue<Chunk>();
     private FastNoise mPerlin;
     private FastRidgedMultifractal mRidged;
 

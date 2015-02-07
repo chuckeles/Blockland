@@ -2,6 +2,7 @@
 
 in vec3 inPosition;
 in vec3 inNormal;
+in vec2 inTexCoord;
 
 uniform mat4 Model;
 uniform mat4 View;

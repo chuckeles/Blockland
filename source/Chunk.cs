@@ -4,24 +4,6 @@ using System.Collections.Generic;
 
 namespace Blockland {
 
-  public struct Block {
-
-    public enum Type {
-      Grass = 1,
-      Dirt = 2,
-      Stone = 3
-    }
-
-    public Block(Type type) {
-      BlockType = type;
-    }
-
-    public Type BlockType;
-
-    public static float Size = 2f;
-
-  }
-
   public class Chunk
     : Component {
 
@@ -41,7 +23,7 @@ namespace Blockland {
       base.Attached(gameObject);
 
       gameObject.EnsureTransform();
-      gameObject.OnDraw += Draw;
+      gameObject.OnRender += Draw;
     }
 
     public void Draw() {
@@ -49,21 +31,9 @@ namespace Blockland {
       Window.Instance.DrawTriangles(mElements.Length);
     }
 
-    public Vector3i Position {
-      get {
-        return mPosition;
-      }
-    }
-
     public ArrayObject ArrayObject {
       get {
         return mArrayObject;
-      }
-    }
-
-    public BufferObject Vertices {
-      get {
-        return mVertices;
       }
     }
 
@@ -73,15 +43,41 @@ namespace Blockland {
       }
     }
 
+    public Vector3i Position {
+      get {
+        return mPosition;
+      }
+    }
+
+    public BufferObject Vertices {
+      get {
+        return mVertices;
+      }
+    }
+
     public static int Size = 16;
     public Dictionary<Vector3i, Block> Blocks = new Dictionary<Vector3i, Block>();
     public State CurrentState = State.Empty;
 
-    private Vector3i mPosition;
     private ArrayObject mArrayObject = new ArrayObject();
-    private BufferObject mVertices = new BufferObject(BufferObject.Type.Vertex);
     private BufferObject mElements = new BufferObject(BufferObject.Type.Element);
-
+    private Vector3i mPosition;
+    private BufferObject mVertices = new BufferObject(BufferObject.Type.Vertex);
   }
 
+  public struct Block {
+
+    public enum Type {
+      Grass = 1,
+      Dirt = 2,
+      Stone = 3
+    }
+
+    public Block(Type type) {
+      BlockType = type;
+    }
+
+    public static float Size = 2f;
+    public Type BlockType;
+  }
 }

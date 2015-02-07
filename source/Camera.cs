@@ -96,8 +96,10 @@ namespace Blockland {
     /// </summary>
     /// <param name="button">Button event</param>
     private void MouseDown(MouseButtonEventArgs button) {
-      if (button.Button == MouseButton.Left)
+      if (button.Button == MouseButton.Left) {
         MouseLock = !MouseLock;
+        Window.Instance.MouseVisible = !MouseLock;
+      }
     }
 
     #endregion Methods
