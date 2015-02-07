@@ -67,7 +67,7 @@ namespace Blockland {
       GL.CompileShader(mId);
 
       if (!Compiled)
-        throw new exce("Shader " + mId + " failed to compile");
+        throw new Exception("Shader " + mId + " failed to compile");
     }
 
     /// <summary>
@@ -104,6 +104,9 @@ namespace Blockland {
     public void Load(string fileName) {
       if (mLoaded)
         return;
+
+      if (!File.Exists(fileName))
+        throw new FileNotFoundException("Source file doesn't exist");
 
       StreamReader file = new StreamReader(fileName);
       string code = file.ReadToEnd();
