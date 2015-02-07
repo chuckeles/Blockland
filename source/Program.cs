@@ -1,7 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using System;
-
-namespace Blockland {
+﻿namespace Blockland {
 
   /// <summary>
   /// Represents the Blockland program. Contains program-wide events and the state of the program.
@@ -17,6 +14,10 @@ namespace Blockland {
 
       Window.Create("Blockland", 1200, 800);
       Resources.LoadAll();
+
+      State.Add(new StatePrepare());
+      State.Add(new StateGame());
+      State.Run();
 
     }
 

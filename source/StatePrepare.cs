@@ -1,25 +1,28 @@
 ﻿using OpenTK;
-using System;
 
 namespace Blockland {
 
+  /// <summary>
+  /// Program state to prepare program before any execution. Currently only sets up the projection matrix.
+  /// </summary>
   public class StatePrepare
     : State {
 
-    public StatePrepare(Window window)
-      : base(window) {
-    }
+    #region Methods
 
+    /// <summary>
+    /// Start the state. Sets up the projection matrix.
+    /// </summary>
     public override void Start() {
-      // set up projection
-      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, (float)mWindow.Width / mWindow.Height, .1f, 1000f);
+      base.Start();
+
+      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)Window.Instance.Width / Window.Instance.Height, .1f, 1000f);
       ShaderProgram.Current.Uniform("Projection", ref projection);
 
       End();
-
-      State state = new StateGame(mWindow);
-      state.Start();
     }
+
+    #endregion Methods
 
   }
 

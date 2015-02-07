@@ -2,17 +2,40 @@
 
 namespace Blockland {
 
+  /// <summary>
+  /// Main game state. Runs the game loop.
+  /// </summary>
   public class StateGame
     : State {
 
-    public StateGame(Window window)
-      : base(window) {
+    #region Methods
+
+    /// <summary>
+    /// End the state.
+    /// </summary>
+    public override void End() {
+      base.End();
+
+      Window.Instance.NativeWindow.KeyDown -= OnEscape;
     }
 
+    /// <summary>
+    /// Event listener for escape key event.
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Key event</param>
+    public void OnEscape(object sender, KeyboardKeyEventArgs e) {
+      if (e.Key == Key.Escape)
+        Window.Instance.Close();
+    }
+
+    /// <summary>
+    /// Start the state.
+    /// </summary>
     public override void Start() {
       base.Start();
 
-      mWindow.NativeWindow.KeyDown += OnEscape;
+      Window.Instance.NativeWindow.KeyDown += OnEscape;
 
       int blocks = 8;
       mWorld.Create(blocks, 8);
@@ -21,22 +44,16 @@ namespace Blockland {
       (mCamera["Transform"] as Transform).Move(halfSize, 100f, halfSize);
     }
 
-    public override void Frame() {
-      base.Frame();
+    #endregion Methods
 
-      mWorld.Update();
-    }
+    #region Fields
 
-    public void OnEscape(object sender, KeyboardKeyEventArgs e) {
-      if (e.Key == Key.Escape)
-        mWindow.Close();
-    }
-
-    public override void End() {
-      base.End();
-    }
-
+    /// <summary>
+    /// World instance.
+    /// </summary>
     private World mWorld = new World();
+
+    #endregion Fields
 
   }
 
