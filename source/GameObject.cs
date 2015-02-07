@@ -54,7 +54,12 @@ namespace Blockland {
     /// </summary>
     /// <param name="name">Component name</param>
     public void RemoveComponent(string name) {
-      mComponents.Remove(name);
+      if (HasComponent(name)) {
+        Component component = GetComponent(name);
+        component.Detached();
+
+        mComponents.Remove(name);
+      }
     }
 
     #endregion Methods
