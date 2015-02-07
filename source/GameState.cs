@@ -25,7 +25,6 @@ namespace Blockland {
     /// <param name="key">Key event</param>
     public void Escape(KeyboardKeyEventArgs key) {
       if (key.Key == Key.Escape) {
-        Window.Instance.Close();
         End();
       }
     }

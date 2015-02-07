@@ -1,4 +1,7 @@
-﻿namespace Blockland {
+﻿using OpenTK.Graphics.OpenGL4;
+using System;
+
+namespace Blockland {
 
   /// <summary>
   /// Represents the Blockland program. Contains program-wide events and the state of the program.
@@ -17,7 +20,27 @@
 
       State.Add(new PrepareState());
       State.Add(new GameState());
-      State.Run();
+
+      try {
+        State.Run();
+      }
+      catch (Exception e) {
+        ErrorCode glError = GL.GetError();
+
+        if (glError != ErrorCode.NoError) {
+          // TODO: log
+
+          throw new Exception("OpenGL Error: " + glError, e);
+        }
+        else {
+          // TODO: log
+
+          throw;
+        }
+      }
+      finally {
+        Window.Instance.Close();
+      }
 
     }
 

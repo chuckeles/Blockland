@@ -66,8 +66,11 @@ namespace Blockland {
     public void Compile() {
       GL.CompileShader(mId);
 
-      if (!Compiled)
-        throw new Exception("Shader " + mId + " failed to compile");
+      if (!Compiled) {
+        string infoLog = GL.GetShaderInfoLog(mId);
+
+        throw new Exception("Shader " + mId + " failed to compile: " + infoLog);
+      }
     }
 
     /// <summary>
