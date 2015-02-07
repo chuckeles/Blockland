@@ -6,17 +6,17 @@ using System.IO;
 
 namespace Blockland {
 
-  public class Texture
+  public class ArrayTexture
     : IResource {
 
     #region Constructor
 
     /// <summary>
-    /// Create a new texture.
+    /// Create a new array texture.
     /// </summary>
     /// <param name="name">Resource name</param>
     /// <exception cref="ArgumentNullException">When empty name is supplied</exception>
-    public Texture(string name) {
+    public ArrayTexture(string name) {
       if (name == "")
         throw new ArgumentNullException("Resource needs a name");
 
@@ -24,21 +24,21 @@ namespace Blockland {
     }
 
     /// <summary>
-    /// Create a new texture and load it from the file.
+    /// Create a new array texture and allocate storage for the layers.
     /// </summary>
     /// <param name="name">Resource name</param>
-    /// <param name="fileName">Source file</param>
-    /// <exception cref="Exception">When empty name is supplied</exception>
-    public Texture(string name, string fileName) :
-      this(name) {
-
-      Load(fileName);
+    /// <param name="width">Texture width</param>
+    /// <param name="height">Texture height</param>
+    /// <param name="layers">Number of layers</param>
+    public ArrayTexture(string name, int width, int height, int layers)
+      : this(name) {
+      Create(width, height, layers);
     }
 
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~Texture() {
+    ~ArrayTexture() {
       if (Window.Instance != null && Window.Instance.Open)
         Dispose();
     }
@@ -48,14 +48,35 @@ namespace Blockland {
     #region Methods
 
     /// <summary>
-    /// Bind the texture.
+    /// Bind the array texture.
     /// </summary>
     public void Bind() {
-      GL.BindTexture(TextureTarget.Texture2D, mId);
+      GL.BindTexture(TextureTarget.Texture2DArray, mId);
     }
 
     /// <summary>
-    /// Destroy the texture and free it from memory.
+    /// Create a new array texture and alocate texture storage.
+    /// </summary>
+    /// <param name="width">Texture width</param>
+    /// <param name="height">Texture height</param>
+    /// <param name="layers">Number of layers</param>
+    public void Create(int width, int height, int layers) {
+      mId = GL.GenTexture();
+
+      GL.BindTexture(TextureTarget.Texture2DArray, mId);
+      GL.TexStorage3D(TextureTarget3d.Texture2DArray, 1, SizedInternalFormat.Rgba8, width, height, layers);
+
+      GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+      GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+      // TODO: Add mipmaps
+
+      GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+      GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+    }
+
+    /// <summary>
+    /// Destroy the array texture and free it from memory.
     /// </summary>
     public void Destroy() {
       if (mId != 0) {
@@ -66,7 +87,7 @@ namespace Blockland {
     }
 
     /// <summary>
-    /// Free the texture from memory.
+    /// Free the array texture from memory.
     /// </summary>
     /// <seealso cref="Destroy" />
     public void Dispose() {
@@ -74,12 +95,21 @@ namespace Blockland {
     }
 
     /// <summary>
-    /// Load the resource. Also binds the texture.
+    /// Load next layer to the array texture. Doesn't bind the texture automatically.
+    /// </summary>
+    /// <param name="fileName">Source file</param>
+    public void Load(string fileName) {
+      Load(fileName, (int)mLoadedLayers, false);
+    }
+
+    /// <summary>
+    /// Load one layer to the array texture.
     /// </summary>
     /// <param name="fileName">Source file name</param>
-    public void Load(string fileName) {
-      if (mLoaded)
-        return;
+    /// <param name="bind">Whether to automatically bind the texture</param>
+    public void Load(string fileName, int layer, bool bind = false) {
+      if (bind)
+        Bind();
 
       if (!File.Exists(fileName))
         throw new FileNotFoundException("Source file doesn't exist");
@@ -87,25 +117,15 @@ namespace Blockland {
       Bitmap bitmap = new Bitmap(fileName);
       BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-      mId = GL.GenTexture();
-      GL.BindTexture(TextureTarget.Texture2D, mId);
-      GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+      GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, layer, data.Width, data.Height, 1, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
 
       bitmap.UnlockBits(data);
 
-      GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-      GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-      // TODO: Add mipmaps
-
-      GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-      GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-      mLoaded = true;
+      ++mLoadedLayers;
     }
 
     /// <summary>
-    /// Use the texture.
+    /// Use the array texture.
     /// </summary>
     /// <param name="textureUnit">Target texture unit</param>
     /// <param name="bind">Whether to automatically bind the texture</param>
@@ -133,7 +153,7 @@ namespace Blockland {
     /// </summary>
     public bool Loaded {
       get {
-        return mLoaded;
+        return mLoadedLayers >= mLayers;
       }
     }
 
@@ -156,9 +176,14 @@ namespace Blockland {
     private int mId = 0;
 
     /// <summary>
-    /// Whether the resource is loaded.
+    /// Number of layers.
     /// </summary>
-    private bool mLoaded = false;
+    private uint mLayers = 0;
+
+    /// <summary>
+    /// Number of loaded layers.
+    /// </summary>
+    private uint mLoadedLayers = 0;
 
     /// <summary>
     /// The name of the resource.

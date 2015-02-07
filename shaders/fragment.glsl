@@ -3,7 +3,9 @@
 in vec3 Normal;
 in vec2 TexCoord;
 
+uniform sampler2DArray ArrayTexture;
 uniform sampler2D Texture;
+uniform sampler2D Texture2;
 
 out vec4 outColor;
 

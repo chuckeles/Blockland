@@ -39,11 +39,24 @@ namespace Blockland {
       mResources.Add(vertexShader.Name, vertexShader);
       mResources.Add(fragmentShader.Name, fragmentShader);
 
-      string[] textures = Directory.GetFiles("textures");
-      foreach (string texture in textures) {
-        Texture resource = new Texture(texture, texture);
-        mResources.Add(resource.Name, resource);
-      }
+      Texture testTexture = new Texture("TestTexture", "textures/Grass.png");
+      Texture testTexture2 = new Texture("TestTexture2", "textures/Dirt.png");
+
+      ArrayTexture blockTexture = new ArrayTexture("BlockTextureArray", 64, 64, 1);
+      blockTexture.Load("textures/Stone.png");
+      //blockTexture.Load("textures/Dirt.png");
+      //blockTexture.Load("textures/Grass.png");
+
+      testTexture.Use(0);
+      testTexture2.Use(1);
+
+      ShaderProgram.Current.Uniform("Texture", 0);
+      ShaderProgram.Current.Uniform("Texture2", 1);
+      ShaderProgram.Current.Uniform("ArrayTexture", 2);
+
+      mResources.Add(blockTexture.Name, blockTexture);
+      mResources.Add(testTexture.Name, testTexture);
+      mResources.Add(testTexture2.Name, testTexture2);
     }
 
     #endregion Methods

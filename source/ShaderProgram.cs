@@ -116,6 +116,16 @@ namespace Blockland {
     }
 
     /// <summary>
+    /// Set shader uniform.
+    /// </summary>
+    /// <param name="uniformName">Name of the uniform</param>
+    /// <param name="unit">Texture unit to use</param>
+    public void Uniform(string uniformName, int unit) {
+      int uniform = GL.GetUniformLocation(mId, uniformName);
+      GL.Uniform1(uniform, unit);
+    }
+
+    /// <summary>
     /// Use this shader program for rendering.
     /// </summary>
     public void Use() {

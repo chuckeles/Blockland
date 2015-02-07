@@ -93,6 +93,7 @@
     <Compile Include="source\State.cs" />
     <Compile Include="source\GameState.cs" />
     <Compile Include="source\PrepareState.cs" />
+    <Compile Include="source\ArrayTexture.cs" />
     <Compile Include="source\Texture.cs" />
     <Compile Include="source\Transform.cs" />
     <Compile Include="source\Vector3i.cs" />
