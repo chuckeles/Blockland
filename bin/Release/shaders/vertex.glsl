@@ -10,10 +10,13 @@ uniform mat4 Projection;
 
 out vec3 Normal;
 out vec3 TexCoord;
+out float Depth;
 
 void main() {
   gl_Position = Projection * View * Model * vec4(inPosition, 1.0);
   
   Normal = inNormal;
   TexCoord = inTexCoord;
+
+  Depth = length((View * Model * vec4(inPosition, 1.0)).xyz);
 }

@@ -37,7 +37,7 @@ namespace Blockland {
 
       GL.Enable(EnableCap.CullFace);
       GL.Enable(EnableCap.DepthTest);
-      GL.ClearColor(0f, 0f, 0f, 0f);
+      GL.ClearColor(0.7f, 0.9f, 1f, 1f);
 
       Program.Events.OnClear += Clear;
       Program.Events.OnUpdate += Update;
