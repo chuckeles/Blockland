@@ -150,25 +150,4 @@ namespace Blockland {
     #endregion Fields
   }
 
-  /// <summary>
-  /// Stores information about the block.
-  /// </summary>
-  public struct Block {
-
-    /// <summary>
-    /// Block type.
-    /// </summary>
-    public enum Type {
-      Grass = 1,
-      Dirt = 2,
-      Stone = 3
-    }
-
-    public Block(Type type) {
-      BlockType = type;
-    }
-
-    public static float Size = 2f;
-    public Type BlockType;
-  }
 }
