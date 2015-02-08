@@ -5,6 +5,8 @@
   /// </summary>
   public struct Block {
 
+    #region Types
+
     /// <summary>
     /// Block type.
     /// </summary>
@@ -14,6 +16,10 @@
       Stone = 3
     }
 
+    #endregion Types
+
+    #region Constructor
+
     /// <summary>
     /// Create a new block.
     /// </summary>
@@ -22,8 +28,22 @@
       BlockType = type;
     }
 
+    #endregion Constructor
+
+    #region Fields
+
+    /// <summary>
+    /// Standard block size.
+    /// </summary>
     public static float Size = 2f;
+
+    /// <summary>
+    /// The type of the block.
+    /// </summary>
     public Type BlockType;
+
+    #endregion Fields
+
   }
 
 }

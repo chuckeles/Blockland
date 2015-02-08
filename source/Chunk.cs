@@ -15,9 +15,25 @@ namespace Blockland {
     /// The state of the chunk.
     /// </summary>
     public enum State {
+
+      /// <summary>
+      /// The chunk has just been created and is empty.
+      /// </summary>
       Empty,
+
+      /// <summary>
+      /// The chunk has been generated and is waiting to be built.
+      /// </summary>
       Generated,
+
+      /// <summary>
+      /// The chunk is build and up-to-date.
+      /// </summary>
       Ready,
+
+      /// <summary>
+      /// Some blocks have been modified and the geometry needs to be rebuilt.
+      /// </summary>
       Dirty
     }
 
