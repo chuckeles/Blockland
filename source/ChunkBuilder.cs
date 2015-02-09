@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -43,7 +42,6 @@ namespace Blockland {
       mChunksToBuildMain = chunksToBuildMain;
       mChunks = chunks;
 
-      Console.WriteLine("Starting the chunk builder thread");
       Thread thread = new Thread(Start);
       thread.Start();
     }
@@ -181,8 +179,6 @@ namespace Blockland {
     /// <param name="vertices">Vertex array</param>
     /// <param name="elements">Element array</param>
     private void Build(Chunk chunk, out float[] vertices, out uint[] elements) {
-      Console.WriteLine("Building chunk [{0}, {1}, {2}]", chunk.Position.X, chunk.Position.Y, chunk.Position.Z);
-
       // list of vertices
       ArrayList vertexData = new ArrayList();
       // list of elements
@@ -328,22 +324,18 @@ namespace Blockland {
       // convert to array
       vertices = vertexData.ToArray(typeof(float)) as float[];
       elements = elementData.ToArray(typeof(uint)) as uint[];
-
-      Console.WriteLine("Built {0} vertices", vertexData.Count);
     }
 
     /// <summary>
     /// Thread entry point.
     /// </summary>
     private void Start() {
-      Console.WriteLine("Chunk builder thread started");
-
       while (World.Current != null) {
-        if (mChunksToBuild.Count <= 0)
-          continue;
-
         Chunk chunk;
         lock (mChunksToBuild) {
+          if (mChunksToBuild.Count <= 0)
+            continue;
+
           chunk = mChunksToBuild.Dequeue() as Chunk;
         }
 
@@ -356,8 +348,6 @@ namespace Blockland {
           mChunksToBuildMain.Enqueue(new BuiltChunk(chunk, vertices, elements));
         }
       }
-
-      Console.WriteLine("Chunk builder thread ending");
     }
 
     #endregion Methods

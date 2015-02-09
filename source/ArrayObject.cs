@@ -57,6 +57,19 @@ namespace Blockland {
 
     #endregion Methods
 
+    #region Properties
+
+    /// <summary>
+    /// Get OpenGL id.
+    /// </summary>
+    public int Id {
+      get {
+        return mId;
+      }
+    }
+
+    #endregion Properties
+
     #region Fields
 
     /// <summary>

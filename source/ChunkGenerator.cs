@@ -1,5 +1,4 @@
 ﻿using LibNoise;
-using System;
 using System.Collections;
 using System.Threading;
 
@@ -35,7 +34,6 @@ namespace Blockland {
       mCaves.OctaveCount = 4;
       mCaves.Frequency = 1 / 64f;
 
-      Console.WriteLine("Starting the chunk generator thread");
       Thread thread = new Thread(Start);
       thread.Start();
     }
@@ -49,7 +47,6 @@ namespace Blockland {
     /// </summary>
     /// <param name="chunk">Chunk to generate</param>
     private void Generate(Chunk chunk) {
-      Console.WriteLine("Generating chunk [{0}, {1}, {2}]", chunk.Position.X, chunk.Position.Y, chunk.Position.Z);
       uint generatedBlocks = 0;
 
       for (int x = 0; x < Chunk.Size; ++x)
@@ -104,22 +101,18 @@ namespace Blockland {
             }
           }
         }
-
-      Console.WriteLine("Generated {0} blocks", generatedBlocks);
     }
 
     /// <summary>
     /// Thread entry point.
     /// </summary>
     private void Start() {
-      Console.WriteLine("Chunk generator thread started");
-
       while (World.Current != null) {
-        if (mChunksToGenerate.Count <= 0)
-          continue;
-
         Chunk chunk;
         lock (mChunksToGenerate) {
+          if (mChunksToGenerate.Count <= 0)
+            continue;
+
           chunk = mChunksToGenerate.Dequeue() as Chunk;
         }
 
@@ -129,8 +122,6 @@ namespace Blockland {
           mChunksToBuild.Enqueue(chunk);
         }
       }
-
-      Console.WriteLine("Chunk generator thread ending");
     }
 
     #endregion Methods

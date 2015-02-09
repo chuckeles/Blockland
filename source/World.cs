@@ -32,13 +32,15 @@ namespace Blockland {
     /// <param name="renderDistance">How many chunks to build around the player</param>
     /// <param name="height">World height in chunks</param>
     public void Create(int renderDistance, int height) {
-      Console.WriteLine("Creating the world");
-
       mHeight = height;
 
-      mAllocator = new ChunkAllocator(mChunksToGenerate, renderDistance, height);
-      mGenerator = new ChunkGenerator(mChunksToGenerate, mChunksToBuild, height);
-      mBuilder = new ChunkBuilder(mChunksToBuild, mChunksToBuildMain, mChunks);
+      new ChunkAllocator(mChunksToGenerate, renderDistance, height);
+      new ChunkGenerator(mChunksToGenerate, mChunksToBuild, height);
+      new ChunkGenerator(mChunksToGenerate, mChunksToBuild, height);
+      new ChunkBuilder(mChunksToBuild, mChunksToBuildMain, mChunks);
+      new ChunkBuilder(mChunksToBuild, mChunksToBuildMain, mChunks);
+      new ChunkBuilder(mChunksToBuild, mChunksToBuildMain, mChunks);
+      new ChunkBuilder(mChunksToBuild, mChunksToBuildMain, mChunks);
 
       Program.Events.OnUpdate += Update;
     }
@@ -66,15 +68,56 @@ namespace Blockland {
 
         ProcessChunk(builtChunk);
 
-        lock (mChunks) {
-          mChunks.Add(builtChunk.Chunk.Position, builtChunk.Chunk);
+        if (!mChunks.ContainsKey(builtChunk.Chunk.Position)) {
+          // the chunk is new! let also neighbors know
+
+          // neighbor chunks
+          Chunk chunkFront;
+          Chunk chunkBack;
+          Chunk chunkRight;
+          Chunk chunkLeft;
+          Chunk chunkTop;
+          Chunk chunkBottom;
+
+          lock (mChunks) {
+            mChunks.TryGetValue(new Vector3i(builtChunk.Chunk.Position.X, builtChunk.Chunk.Position.Y, builtChunk.Chunk.Position.Z + 1), out chunkFront);
+            mChunks.TryGetValue(new Vector3i(builtChunk.Chunk.Position.X, builtChunk.Chunk.Position.Y, builtChunk.Chunk.Position.Z - 1), out chunkBack);
+            mChunks.TryGetValue(new Vector3i(builtChunk.Chunk.Position.X + 1, builtChunk.Chunk.Position.Y, builtChunk.Chunk.Position.Z), out chunkRight);
+            mChunks.TryGetValue(new Vector3i(builtChunk.Chunk.Position.X - 1, builtChunk.Chunk.Position.Y, builtChunk.Chunk.Position.Z), out chunkLeft);
+            mChunks.TryGetValue(new Vector3i(builtChunk.Chunk.Position.X, builtChunk.Chunk.Position.Y + 1, builtChunk.Chunk.Position.Z), out chunkTop);
+            mChunks.TryGetValue(new Vector3i(builtChunk.Chunk.Position.X, builtChunk.Chunk.Position.Y - 1, builtChunk.Chunk.Position.Z), out chunkBottom);
+          }
+
+          // add chunks to build queue
+          lock (mChunksToBuild) {
+            if (chunkFront != null)
+              mChunksToBuild.Enqueue(chunkFront);
+            if (chunkBack != null)
+              mChunksToBuild.Enqueue(chunkBack);
+            if (chunkRight != null)
+              mChunksToBuild.Enqueue(chunkRight);
+            if (chunkLeft != null)
+              mChunksToBuild.Enqueue(chunkLeft);
+            if (chunkTop != null)
+              mChunksToBuild.Enqueue(chunkTop);
+            if (chunkBottom != null)
+              mChunksToBuild.Enqueue(chunkBottom);
+          }
+
+          lock (mChunks) {
+            mChunks.Add(builtChunk.Chunk.Position, builtChunk.Chunk);
+          }
+
+          GameObject gameObject = new GameObject();
+          gameObject.AddComponent(new Transform(builtChunk.Chunk.Position.X * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Y * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Z * Chunk.Size * Block.Size));
+          gameObject.AddComponent(builtChunk.Chunk);
+
+          State.Current.AddGameObject(gameObject);
         }
-
-        GameObject gameObject = new GameObject();
-        gameObject.AddComponent(new Transform(builtChunk.Chunk.Position.X * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Y * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Z * Chunk.Size * Block.Size));
-        gameObject.AddComponent(builtChunk.Chunk);
-
-        State.Current.AddGameObject(gameObject);
+        else {
+          // chunk already there
+          int me = 0;
+        }
       }
     }
 
@@ -85,14 +128,17 @@ namespace Blockland {
     private void ProcessChunk(ChunkBuilder.BuiltChunk builtChunk) {
       Chunk chunk = builtChunk.Chunk;
 
-      Console.WriteLine("Main thread processing chunk [{0}, {1}, {2}]", chunk.Position.X, chunk.Position.Y, chunk.Position.Z);
+      if (chunk.ArrayObject.Id == 0)
+        chunk.ArrayObject.Create();
 
-      chunk.ArrayObject.Create();
+      if (chunk.Vertices.Id == 0)
+        chunk.Vertices.Create();
+
+      if (chunk.Elements.Id == 0)
+        chunk.Elements.Create();
+
       chunk.ArrayObject.Bind();
-
-      chunk.Vertices.Create();
       chunk.Vertices.CopyData(builtChunk.Vertices, true);
-      chunk.Elements.Create();
       chunk.Elements.CopyData(builtChunk.Elements, true);
 
       ShaderProgram.Current.Attribute("inPosition", 3, 9, 0);
@@ -148,21 +194,6 @@ namespace Blockland {
     /// Static instance.
     /// </summary>
     private static World mCurrent;
-
-    /// <summary>
-    /// Chunk allocator thread.
-    /// </summary>
-    private ChunkAllocator mAllocator;
-
-    /// <summary>
-    /// Chunk builder thread.
-    /// </summary>
-    private ChunkBuilder mBuilder;
-
-    /// <summary>
-    /// Chunk generator thread.
-    /// </summary>
-    private ChunkGenerator mGenerator;
 
     /// <summary>
     /// World height in chunks.

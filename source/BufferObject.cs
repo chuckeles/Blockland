@@ -110,6 +110,15 @@ namespace Blockland {
 
     #region Properties
 
+    /// <summary>
+    /// Get OpenGL id.
+    /// </summary>
+    public int Id {
+      get {
+        return mId;
+      }
+    }
+
     public int Length {
       get {
         return mLength;

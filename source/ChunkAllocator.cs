@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Threading;
 
 namespace Blockland {
@@ -22,7 +21,6 @@ namespace Blockland {
       mRenderDistance = renderDistance;
       mHeight = height;
 
-      Console.WriteLine("Starting the chunk allocator thread");
       Thread thread = new Thread(Start);
       thread.Start();
     }
@@ -35,19 +33,13 @@ namespace Blockland {
     /// Thread entry point.
     /// </summary>
     private void Start() {
-      Console.WriteLine("Chunk allocator thread started");
-
       for (int x = -mRenderDistance / 2, xMax = (int)((mRenderDistance / 2f) + 0.5f); x < xMax; ++x)
         for (int z = -mRenderDistance / 2, zMax = (int)((mRenderDistance / 2f) + 0.5f); z < zMax; ++z)
           for (int y = 0; y < mHeight; ++y) {
-            Console.WriteLine("Allocating chunk [{0}, {1}, {2}]", x, y, z);
-
             lock (mChunksToGenerate) {
               mChunksToGenerate.Enqueue(new Chunk(x, y, z));
             }
           }
-
-      Console.WriteLine("Chunk allocator thread ending");
     }
 
     #endregion Methods
