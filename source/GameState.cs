@@ -37,6 +37,9 @@ namespace Blockland {
 
       Program.Events.OnKeyDown += Escape;
 
+      World world = new World();
+      world.Create(1, 8);
+
       (mCamera["Transform"] as Transform).Move(0f, 100f, 0f);
     }
 

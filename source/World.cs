@@ -32,6 +32,11 @@ namespace Blockland {
     /// <param name="renderDistance">How many chunks to build around the player</param>
     /// <param name="height">World height in chunks</param>
     public void Create(int renderDistance, int height) {
+      Console.WriteLine("Creating the world");
+
+      mHeight = height;
+
+      mAllocator = new ChunkAllocator(mChunksToGenerate, renderDistance, height);
     }
 
     #endregion Methods
@@ -41,9 +46,36 @@ namespace Blockland {
     /// <summary>
     /// Get the current world instance.
     /// </summary>
-    public World Current {
+    public static World Current {
       get {
         return mCurrent;
+      }
+    }
+
+    /// <summary>
+    /// Get world height.
+    /// </summary>
+    public int Height {
+      get {
+        return mHeight;
+      }
+    }
+
+    /// <summary>
+    /// Get chunks to build.
+    /// </summary>
+    public Queue ChunksToBuild {
+      get {
+        return mChunksToBuild;
+      }
+    }
+
+    /// <summary>
+    /// Get chunks to generate.
+    /// </summary>
+    public Queue ChunksToGenerate {
+      get {
+        return mChunksToGenerate;
       }
     }
 
@@ -54,7 +86,17 @@ namespace Blockland {
     /// <summary>
     /// Static instance.
     /// </summary>
-    private World mCurrent;
+    private static World mCurrent;
+
+    /// <summary>
+    /// Chunk allocator thread.
+    /// </summary>
+    private ChunkAllocator mAllocator;
+
+    /// <summary>
+    /// World height in chunks.
+    /// </summary>
+    private int mHeight = 0;
 
     /// <summary>
     /// Dictionary of loaded and ready chunks.
@@ -62,14 +104,14 @@ namespace Blockland {
     private Dictionary<Vector3i, Chunk> mChunks = new Dictionary<Vector3i, Chunk>();
 
     /// <summary>
-    /// List of chunks waiting to be built.
+    /// Queue of chunks waiting to be built.
     /// </summary>
-    private ArrayList mChunksToBuild = new ArrayList();
+    private Queue mChunksToBuild = new Queue();
 
     /// <summary>
-    /// List of chunks waiting to be generated.
+    /// Queue of chunks waiting to be generated.
     /// </summary>
-    private ArrayList mChunksToGenerate = new ArrayList();
+    private Queue mChunksToGenerate = new Queue();
 
     #endregion Fields
 
