@@ -26,8 +26,6 @@ namespace Blockland {
     /// <seealso cref="Create" />
     public BufferObject(Type type) {
       mType = type;
-
-      Create();
     }
 
     /// <summary>

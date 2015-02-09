@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Blockland {
 
@@ -15,9 +16,25 @@ namespace Blockland {
     /// The state of the chunk.
     /// </summary>
     public enum State {
+
+      /// <summary>
+      /// The chunk has just been created and is empty.
+      /// </summary>
       Empty,
+
+      /// <summary>
+      /// The chunk has been generated and is waiting to be built.
+      /// </summary>
       Generated,
+
+      /// <summary>
+      /// The chunk is build and up-to-date.
+      /// </summary>
       Ready,
+
+      /// <summary>
+      /// Some blocks have been modified and the geometry needs to be rebuilt.
+      /// </summary>
       Dirty
     }
 
@@ -125,6 +142,7 @@ namespace Blockland {
     /// <summary>
     /// Current chunk state.
     /// </summary>
+    [Obsolete("Is this even necessarry?")]
     public State CurrentState = State.Empty;
 
     /// <summary>
@@ -150,25 +168,4 @@ namespace Blockland {
     #endregion Fields
   }
 
-  /// <summary>
-  /// Stores information about the block.
-  /// </summary>
-  public struct Block {
-
-    /// <summary>
-    /// Block type.
-    /// </summary>
-    public enum Type {
-      Grass = 1,
-      Dirt = 2,
-      Stone = 3
-    }
-
-    public Block(Type type) {
-      BlockType = type;
-    }
-
-    public static float Size = 2f;
-    public Type BlockType;
-  }
 }

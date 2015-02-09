@@ -12,14 +12,6 @@ namespace Blockland {
     #region Constructor
 
     /// <summary>
-    /// Create new array object.
-    /// </summary>
-    /// <seealso cref="Create" />
-    public ArrayObject() {
-      Create();
-    }
-
-    /// <summary>
     /// Destructor.
     /// </summary>
     ~ArrayObject() {

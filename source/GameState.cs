@@ -16,6 +16,8 @@ namespace Blockland {
     public override void End() {
       base.End();
 
+      World.Current.Destroy();
+
       Program.Events.OnKeyDown -= Escape;
     }
 
@@ -37,23 +39,13 @@ namespace Blockland {
 
       Program.Events.OnKeyDown += Escape;
 
-      int blocks = 8;
-      mWorld.Create(blocks, 8);
+      World world = new World();
+      world.Create(3, 4);
 
-      float halfSize = blocks * Chunk.Size * Block.Size / 2;
-      (mCamera["Transform"] as Transform).Move(halfSize, 100f, halfSize);
+      (mCamera["Transform"] as Transform).Move(16f, 32f * 3, 16f);
     }
 
     #endregion Methods
-
-    #region Fields
-
-    /// <summary>
-    /// World instance.
-    /// </summary>
-    private World mWorld = new World();
-
-    #endregion Fields
 
   }
 
