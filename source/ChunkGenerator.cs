@@ -84,7 +84,7 @@ namespace Blockland {
             if (yGlob < worldHeight * height)
               detail = 0;
             else
-              detail *= (yGlob - worldHeight * height) / (worldHeight * 0.2f) * 2;
+              detail *= (yGlob - worldHeight * height) / (worldHeight * 0.1f);
 
             // calculate depth
             float depth = height * worldHeight - (y + chunk.Position.Y * Chunk.Size);
