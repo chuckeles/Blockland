@@ -17,7 +17,7 @@ namespace Blockland {
     /// <param name="chunksToGenerate">World's queue of chunks to generate</param>
     /// <param name="chunksToBuild">World's queue of chunks to build</param>
     /// <param name="height">World height in chunks</param>
-    public ChunkGenerator(Queue chunksToGenerate, PriorityQueue<Chunk> chunksToBuild, int height) {
+    public ChunkGenerator(PriorityQueue<Chunk> chunksToGenerate, PriorityQueue<Chunk> chunksToBuild, int height) {
       mChunksToGenerate = chunksToGenerate;
       mChunksToBuild = chunksToBuild;
       mHeight = height;
@@ -161,7 +161,7 @@ namespace Blockland {
     /// <summary>
     /// World's queue of chunks to generate.
     /// </summary>
-    private Queue mChunksToGenerate;
+    private PriorityQueue<Chunk> mChunksToGenerate;
 
     #endregion Fields
 

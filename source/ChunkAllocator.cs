@@ -16,7 +16,7 @@ namespace Blockland {
     /// <param name="chunksToGenerate">World's queue of chunks to generate</param>
     /// <param name="renderDistance">Chunk render distance</param>
     /// <param name="height">World's height in chunks</param>
-    public ChunkAllocator(Queue chunksToGenerate, int renderDistance, int height) {
+    public ChunkAllocator(PriorityQueue<Chunk> chunksToGenerate, int renderDistance, int height) {
       mChunksToGenerate = chunksToGenerate;
       mRenderDistance = renderDistance;
       mHeight = height;
@@ -37,7 +37,8 @@ namespace Blockland {
         for (int x = -mRenderDistance / 2, xMax = (int)((mRenderDistance / 2f) + 0.5f); x < xMax; ++x)
           for (int z = -mRenderDistance / 2, zMax = (int)((mRenderDistance / 2f) + 0.5f); z < zMax; ++z)
             for (int y = 0; y < mHeight; ++y) {
-              mChunksToGenerate.Enqueue(new Chunk(x, y, z));
+              Chunk chunk = new Chunk(x, y, z);
+              mChunksToGenerate.Enqueue((int)(new Vector3i(chunk.Position.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z).Length * 90), chunk);
             }
       }
     }
@@ -54,7 +55,7 @@ namespace Blockland {
     /// <summary>
     /// Queue of chunks to generate.
     /// </summary>
-    private Queue mChunksToGenerate;
+    private PriorityQueue<Chunk> mChunksToGenerate;
 
     /// <summary>
     /// Render distance.

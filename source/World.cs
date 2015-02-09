@@ -176,7 +176,7 @@ namespace Blockland {
     /// <summary>
     /// Get chunks to generate.
     /// </summary>
-    public Queue ChunksToGenerate {
+    public PriorityQueue<Chunk> ChunksToGenerate {
       get {
         return mChunksToGenerate;
       }
@@ -214,7 +214,7 @@ namespace Blockland {
     /// <summary>
     /// Queue of chunks waiting to be generated.
     /// </summary>
-    private Queue mChunksToGenerate = new Queue();
+    private PriorityQueue<Chunk> mChunksToGenerate = new PriorityQueue<Chunk>();
 
     #endregion Fields
 
