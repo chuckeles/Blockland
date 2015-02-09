@@ -23,9 +23,13 @@ namespace Blockland {
       mChunksToBuild = chunksToBuild;
       mHeight = height;
 
-      mPerlin.Seed = (int)(Random.Value * uint.MaxValue);
-      mPerlin.OctaveCount = 4;
-      mPerlin.Frequency = 1 / 128f;
+      mHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
+      mHeightmap.OctaveCount = 4;
+      mHeightmap.Frequency = 1 / 128f;
+
+      mDirtHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
+      mDirtHeightmap.OctaveCount = 4;
+      mDirtHeightmap.Frequency = 1 / 128f;
 
       Console.WriteLine("Starting the chunk generator thread");
       Thread thread = new Thread(Start);
@@ -43,6 +47,44 @@ namespace Blockland {
     private void Generate(Chunk chunk) {
       Console.WriteLine("Generating chunk [{0}, {1}, {2}]", chunk.Position.X, chunk.Position.Y, chunk.Position.Z);
 
+      for (int x = 0; x < Chunk.Size; ++x)
+        for (int z = 0; z < Chunk.Size; ++z) {
+
+          // get height
+          float height = (float)mHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
+
+          // normalize height
+          height *= Chunk.Size * mHeight;
+
+          // fill blocks
+          for (int y = 0; y < Chunk.Size; ++y) {
+            // calculate depth
+            float depth = height - (y + chunk.Position.Y * Chunk.Size);
+
+            // block type
+            Block.Type type = Block.Type.Stone;
+
+            // grass at the top
+            if (depth <= 1)
+              type = Block.Type.Grass;
+
+            // get dirt depth
+            float dirtDepth = (float)mDirtHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
+
+            // normalize it
+            dirtDepth *= 10;
+
+            // is this dirt?
+            if (depth < dirtDepth)
+              type = Block.Type.Dirt;
+
+            // add block
+            if (depth > 0)
+              chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
+          }
+        }
+
+      Console.WriteLine("Chunk generated");
     }
 
     /// <summary>
@@ -75,9 +117,19 @@ namespace Blockland {
     #region Fields
 
     /// <summary>
+    /// Perlin noise for dirt layer heightmap generation.
+    /// </summary>
+    private FastNoise mDirtHeightmap = new FastNoise();
+
+    /// <summary>
     /// World height in chunks.
     /// </summary>
     private int mHeight;
+
+    /// <summary>
+    /// Perlin noise for terrain heightmap generation.
+    /// </summary>
+    private FastNoise mHeightmap = new FastNoise();
 
     /// <summary>
     /// World's queue of chunks to build.
@@ -88,11 +140,6 @@ namespace Blockland {
     /// World's queue of chunks to generate.
     /// </summary>
     private Queue mChunksToGenerate;
-
-    /// <summary>
-    /// Perlin noise for terrain generation.
-    /// </summary>
-    private FastNoise mPerlin = new FastNoise();
 
     #endregion Fields
 
