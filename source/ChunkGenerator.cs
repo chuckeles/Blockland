@@ -46,6 +46,7 @@ namespace Blockland {
     /// <param name="chunk">Chunk to generate</param>
     private void Generate(Chunk chunk) {
       Console.WriteLine("Generating chunk [{0}, {1}, {2}]", chunk.Position.X, chunk.Position.Y, chunk.Position.Z);
+      uint generatedBlocks = 0;
 
       for (int x = 0; x < Chunk.Size; ++x)
         for (int z = 0; z < Chunk.Size; ++z) {
@@ -79,10 +80,14 @@ namespace Blockland {
               type = Block.Type.Dirt;
 
             // add block
-            if (depth > 0)
+            if (depth > 0) {
               chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
+              ++generatedBlocks;
+            }
           }
         }
+
+      Console.WriteLine("Generated {0} blocks", generatedBlocks);
     }
 
     /// <summary>

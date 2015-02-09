@@ -8,6 +8,18 @@
     #region Types
 
     /// <summary>
+    /// The side of a block.
+    /// </summary>
+    public enum Side {
+      Front,
+      Back,
+      Right,
+      Left,
+      Top,
+      Bottom
+    }
+
+    /// <summary>
     /// Block type.
     /// </summary>
     public enum Type {
