@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Blockland {
 
@@ -141,6 +142,7 @@ namespace Blockland {
     /// <summary>
     /// Current chunk state.
     /// </summary>
+    [Obsolete("Is this even necessarry?")]
     public State CurrentState = State.Empty;
 
     /// <summary>

@@ -37,6 +37,14 @@ namespace Blockland {
       mHeight = height;
 
       mAllocator = new ChunkAllocator(mChunksToGenerate, renderDistance, height);
+      mGenerator = new ChunkGenerator(mChunksToGenerate, mChunksToBuild, height);
+    }
+
+    /// <summary>
+    /// Destroy the world.
+    /// </summary>
+    public void Destroy() {
+      mCurrent = null;
     }
 
     #endregion Methods
@@ -92,6 +100,11 @@ namespace Blockland {
     /// Chunk allocator thread.
     /// </summary>
     private ChunkAllocator mAllocator;
+
+    /// <summary>
+    /// Chunk generator thread.
+    /// </summary>
+    private ChunkGenerator mGenerator;
 
     /// <summary>
     /// World height in chunks.

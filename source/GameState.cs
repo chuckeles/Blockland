@@ -16,6 +16,8 @@ namespace Blockland {
     public override void End() {
       base.End();
 
+      World.Current.Destroy();
+
       Program.Events.OnKeyDown -= Escape;
     }
 
