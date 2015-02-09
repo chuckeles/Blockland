@@ -83,6 +83,7 @@
     <Compile Include="source\Camera.cs" />
     <Compile Include="source\Chunk.cs" />
     <Compile Include="source\ChunkAllocator.cs" />
+    <Compile Include="source\ChunkBuilder.cs" />
     <Compile Include="source\ChunkGenerator.cs" />
     <Compile Include="source\Component.cs" />
     <Compile Include="source\Events.cs" />

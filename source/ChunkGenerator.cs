@@ -54,7 +54,7 @@ namespace Blockland {
           float height = (float)mHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
 
           // normalize height
-          height *= Chunk.Size * mHeight;
+          height = Chunk.Size * mHeight * (0.25f + height / 2);
 
           // fill blocks
           for (int y = 0; y < Chunk.Size; ++y) {
@@ -64,18 +64,18 @@ namespace Blockland {
             // block type
             Block.Type type = Block.Type.Stone;
 
-            // grass at the top
-            if (depth <= 1)
-              type = Block.Type.Grass;
-
             // get dirt depth
             float dirtDepth = (float)mDirtHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
 
             // normalize it
-            dirtDepth *= 10;
+            dirtDepth = 4 + dirtDepth * 10;
+
+            // grass at the top
+            if (depth <= 1)
+              type = Block.Type.Grass;
 
             // is this dirt?
-            if (depth < dirtDepth)
+            else if (depth < dirtDepth)
               type = Block.Type.Dirt;
 
             // add block
@@ -83,8 +83,6 @@ namespace Blockland {
               chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
           }
         }
-
-      Console.WriteLine("Chunk generated");
     }
 
     /// <summary>
