@@ -72,7 +72,7 @@ namespace Blockland {
       }
 
       GameObject gameObject = new GameObject();
-      gameObject.AddComponent(new Transform(/*builtChunk.Chunk.Position.X * Chunk.Size, builtChunk.Chunk.Position.Y * Chunk.Size, builtChunk.Chunk.Position.Z * Chunk.Size*/));
+      gameObject.AddComponent(new Transform(builtChunk.Chunk.Position.X * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Y * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Z * Chunk.Size * Block.Size));
       gameObject.AddComponent(builtChunk.Chunk);
 
       State.Current.AddGameObject(gameObject);
@@ -94,6 +94,10 @@ namespace Blockland {
       chunk.Vertices.CopyData(builtChunk.Vertices, true);
       chunk.Elements.Create();
       chunk.Elements.CopyData(builtChunk.Elements, true);
+
+      ShaderProgram.Current.Attribute("inPosition", 3, 9, 0);
+      ShaderProgram.Current.Attribute("inNormal", 3, 9, 3);
+      ShaderProgram.Current.Attribute("inTexCoord", 3, 9, 6);
     }
 
     #endregion Methods

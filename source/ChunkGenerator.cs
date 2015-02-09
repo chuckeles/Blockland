@@ -55,7 +55,7 @@ namespace Blockland {
           float height = (float)mHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
 
           // normalize height
-          height = Chunk.Size * mHeight * (0.25f + height / 2);
+          height = Chunk.Size * mHeight * (0.4f + height / 2);
 
           // fill blocks
           for (int y = 0; y < Chunk.Size; ++y) {

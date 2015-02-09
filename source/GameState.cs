@@ -42,7 +42,7 @@ namespace Blockland {
       World world = new World();
       world.Create(3, 8);
 
-      (mCamera["Transform"] as Transform).Move(0f, 100f, 0f);
+      (mCamera["Transform"] as Transform).Move(16f, 32f * 4, 16f);
     }
 
     #endregion Methods
