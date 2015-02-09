@@ -89,6 +89,7 @@
     <Compile Include="source\Events.cs" />
     <Compile Include="source\GameObject.cs" />
     <Compile Include="source\IResource.cs" />
+    <Compile Include="source\PriorityQueue.cs" />
     <Compile Include="source\Program.cs" />
     <Compile Include="source\Random.cs" />
     <Compile Include="source\Resources.cs" />

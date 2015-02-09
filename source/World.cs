@@ -91,17 +91,17 @@ namespace Blockland {
           // add chunks to build queue
           lock (mChunksToBuild) {
             if (chunkFront != null)
-              mChunksToBuild.Enqueue(chunkFront);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkFront.Position.X, chunkFront.Position.Y - mHeight / 2, chunkFront.Position.Z).Length * 100), chunkFront);
             if (chunkBack != null)
-              mChunksToBuild.Enqueue(chunkBack);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkBack.Position.X, chunkBack.Position.Y - mHeight / 2, chunkBack.Position.Z).Length * 100), chunkBack);
             if (chunkRight != null)
-              mChunksToBuild.Enqueue(chunkRight);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkRight.Position.X, chunkRight.Position.Y - mHeight / 2, chunkRight.Position.Z).Length * 100), chunkRight);
             if (chunkLeft != null)
-              mChunksToBuild.Enqueue(chunkLeft);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkLeft.Position.X, chunkLeft.Position.Y - mHeight / 2, chunkLeft.Position.Z).Length * 100), chunkLeft);
             if (chunkTop != null)
-              mChunksToBuild.Enqueue(chunkTop);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkTop.Position.X, chunkTop.Position.Y - mHeight / 2, chunkTop.Position.Z).Length * 100), chunkTop);
             if (chunkBottom != null)
-              mChunksToBuild.Enqueue(chunkBottom);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkBottom.Position.X, chunkBottom.Position.Y - mHeight / 2, chunkBottom.Position.Z).Length * 100), chunkBottom);
           }
 
           lock (mChunks) {
@@ -113,10 +113,6 @@ namespace Blockland {
           gameObject.AddComponent(builtChunk.Chunk);
 
           State.Current.AddGameObject(gameObject);
-        }
-        else {
-          // chunk already there
-          int me = 0;
         }
       }
     }
@@ -171,7 +167,7 @@ namespace Blockland {
     /// <summary>
     /// Get chunks to build.
     /// </summary>
-    public Queue ChunksToBuild {
+    public PriorityQueue<Chunk> ChunksToBuild {
       get {
         return mChunksToBuild;
       }
@@ -208,7 +204,7 @@ namespace Blockland {
     /// <summary>
     /// Queue of chunks waiting to be built.
     /// </summary>
-    private Queue mChunksToBuild = new Queue();
+    private PriorityQueue<Chunk> mChunksToBuild = new PriorityQueue<Chunk>();
 
     /// <summary>
     /// Chunks that need to be processed in the main thread.

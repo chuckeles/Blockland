@@ -17,22 +17,27 @@ namespace Blockland {
     /// <param name="chunksToGenerate">World's queue of chunks to generate</param>
     /// <param name="chunksToBuild">World's queue of chunks to build</param>
     /// <param name="height">World height in chunks</param>
-    public ChunkGenerator(Queue chunksToGenerate, Queue chunksToBuild, int height) {
+    public ChunkGenerator(Queue chunksToGenerate, PriorityQueue<Chunk> chunksToBuild, int height) {
       mChunksToGenerate = chunksToGenerate;
       mChunksToBuild = chunksToBuild;
       mHeight = height;
 
-      mHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
-      mHeightmap.OctaveCount = 4;
-      mHeightmap.Frequency = 1 / 128f;
+      if (mHeightmap == null) {
+        mHeightmap = new FastNoise();
+        mHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
+        mHeightmap.OctaveCount = 4;
+        mHeightmap.Frequency = 1 / 128f;
 
-      mDirtHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
-      mDirtHeightmap.OctaveCount = 4;
-      mDirtHeightmap.Frequency = 1 / 64f;
+        mDirtHeightmap = new FastNoise();
+        mDirtHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
+        mDirtHeightmap.OctaveCount = 4;
+        mDirtHeightmap.Frequency = 1 / 64f;
 
-      mCaves.Seed = (int)(Random.Value * uint.MaxValue);
-      mCaves.OctaveCount = 4;
-      mCaves.Frequency = 1 / 64f;
+        mCaves = new FastRidgedMultifractal();
+        mCaves.Seed = (int)(Random.Value * uint.MaxValue);
+        mCaves.OctaveCount = 4;
+        mCaves.Frequency = 1 / 64f;
+      }
 
       Thread thread = new Thread(Start);
       thread.Start();
@@ -119,7 +124,7 @@ namespace Blockland {
         Generate(chunk);
 
         lock (mChunksToBuild) {
-          mChunksToBuild.Enqueue(chunk);
+          mChunksToBuild.Enqueue((int)(new Vector3i(chunk.Position.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z).Length * 90), chunk);
         }
       }
     }
@@ -131,12 +136,17 @@ namespace Blockland {
     /// <summary>
     /// Ridged multifractal noise for cave generation.
     /// </summary>
-    private FastRidgedMultifractal mCaves = new FastRidgedMultifractal();
+    private static FastRidgedMultifractal mCaves;
 
     /// <summary>
     /// Perlin noise for dirt layer heightmap generation.
     /// </summary>
-    private FastNoise mDirtHeightmap = new FastNoise();
+    private static FastNoise mDirtHeightmap;
+
+    /// <summary>
+    /// Perlin noise for terrain heightmap generation.
+    /// </summary>
+    private static FastNoise mHeightmap;
 
     /// <summary>
     /// World height in chunks.
@@ -144,14 +154,9 @@ namespace Blockland {
     private int mHeight;
 
     /// <summary>
-    /// Perlin noise for terrain heightmap generation.
-    /// </summary>
-    private FastNoise mHeightmap = new FastNoise();
-
-    /// <summary>
     /// World's queue of chunks to build.
     /// </summary>
-    private Queue mChunksToBuild;
+    private PriorityQueue<Chunk> mChunksToBuild;
 
     /// <summary>
     /// World's queue of chunks to generate.

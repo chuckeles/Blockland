@@ -1,4 +1,6 @@
-﻿namespace Blockland {
+﻿using System;
+
+namespace Blockland {
 
   /// <summary>
   /// 3-dimensional integer vector.
@@ -20,6 +22,16 @@
     }
 
     #endregion Constructor
+
+    #region Properties
+
+    public float Length {
+      get {
+        return (float)Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2) + Math.Pow(Z, 2));
+      }
+    }
+
+    #endregion Properties
 
     #region Fields
 

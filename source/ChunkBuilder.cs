@@ -37,7 +37,7 @@ namespace Blockland {
     /// <param name="chunksToBuild">World's queue of chunks to build</param>
     /// <param name="chunksToBuildMain">World's queue of chunks to build in the main thread</param>
     /// <param name="chunks">List of ready chunks</param>
-    public ChunkBuilder(Queue chunksToBuild, Queue chunksToBuildMain, Dictionary<Vector3i, Chunk> chunks) {
+    public ChunkBuilder(PriorityQueue<Chunk> chunksToBuild, Queue chunksToBuildMain, Dictionary<Vector3i, Chunk> chunks) {
       mChunksToBuild = chunksToBuild;
       mChunksToBuildMain = chunksToBuildMain;
       mChunks = chunks;
@@ -362,7 +362,7 @@ namespace Blockland {
     /// <summary>
     /// World's queue of chunks to build.
     /// </summary>
-    private Queue mChunksToBuild;
+    private PriorityQueue<Chunk> mChunksToBuild;
 
     /// <summary>
     /// World's queue of chunks to build in the main thread.
