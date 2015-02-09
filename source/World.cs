@@ -57,25 +57,25 @@ namespace Blockland {
     /// </summary>
     /// <param name="deltaTime">Not used</param>
     public void Update(float deltaTime) {
-      if (mChunksToBuildMain.Count <= 0)
-        return;
+      while (mChunksToBuildMain.Count > 0) {
 
-      ChunkBuilder.BuiltChunk builtChunk;
-      lock (mChunksToBuildMain) {
-        builtChunk = (ChunkBuilder.BuiltChunk)mChunksToBuildMain.Dequeue();
+        ChunkBuilder.BuiltChunk builtChunk;
+        lock (mChunksToBuildMain) {
+          builtChunk = (ChunkBuilder.BuiltChunk)mChunksToBuildMain.Dequeue();
+        }
+
+        ProcessChunk(builtChunk);
+
+        lock (mChunks) {
+          mChunks.Add(builtChunk.Chunk.Position, builtChunk.Chunk);
+        }
+
+        GameObject gameObject = new GameObject();
+        gameObject.AddComponent(new Transform(builtChunk.Chunk.Position.X * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Y * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Z * Chunk.Size * Block.Size));
+        gameObject.AddComponent(builtChunk.Chunk);
+
+        State.Current.AddGameObject(gameObject);
       }
-
-      ProcessChunk(builtChunk);
-
-      lock (mChunks) {
-        mChunks.Add(builtChunk.Chunk.Position, builtChunk.Chunk);
-      }
-
-      GameObject gameObject = new GameObject();
-      gameObject.AddComponent(new Transform(builtChunk.Chunk.Position.X * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Y * Chunk.Size * Block.Size, builtChunk.Chunk.Position.Z * Chunk.Size * Block.Size));
-      gameObject.AddComponent(builtChunk.Chunk);
-
-      State.Current.AddGameObject(gameObject);
     }
 
     /// <summary>
