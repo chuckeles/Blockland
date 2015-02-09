@@ -29,7 +29,11 @@ namespace Blockland {
 
       mDirtHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
       mDirtHeightmap.OctaveCount = 4;
-      mDirtHeightmap.Frequency = 1 / 128f;
+      mDirtHeightmap.Frequency = 1 / 64f;
+
+      mCaves.Seed = (int)(Random.Value * uint.MaxValue);
+      mCaves.OctaveCount = 4;
+      mCaves.Frequency = 1 / 64f;
 
       Console.WriteLine("Starting the chunk generator thread");
       Thread thread = new Thread(Start);
@@ -55,12 +59,25 @@ namespace Blockland {
           float height = (float)mHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
 
           // normalize height
+          height = (height + 1) / 2;
           height = Chunk.Size * mHeight * (0.4f + height / 2);
 
           // fill blocks
           for (int y = 0; y < Chunk.Size; ++y) {
             // calculate depth
             float depth = height - (y + chunk.Position.Y * Chunk.Size);
+
+            // cave
+            float cave = (float)mCaves.GetValue(
+                (x + chunk.Position.X * Chunk.Size),
+                ((y + chunk.Position.Y * Chunk.Size) * 1.5f),
+                (z + chunk.Position.Z * Chunk.Size));
+
+            float depthClapmed = (depth < 4f ? 4f : depth > Chunk.Size * 2 ? Chunk.Size * 2 : depth) / (Chunk.Size * 2);
+            cave *= 0.9f + depthClapmed * 0.1f;
+
+            if (cave > 0.8f)
+              continue;
 
             // block type
             Block.Type type = Block.Type.Stone;
@@ -69,7 +86,8 @@ namespace Blockland {
             float dirtDepth = (float)mDirtHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
 
             // normalize it
-            dirtDepth = 4 + dirtDepth * 10;
+            dirtDepth = (dirtDepth + 1) / 2;
+            dirtDepth = Chunk.Size / 8 + dirtDepth * Chunk.Size / 2;
 
             // grass at the top
             if (depth <= 1)
@@ -118,6 +136,11 @@ namespace Blockland {
     #endregion Methods
 
     #region Fields
+
+    /// <summary>
+    /// Ridged multifractal noise for cave generation.
+    /// </summary>
+    private FastRidgedMultifractal mCaves = new FastRidgedMultifractal();
 
     /// <summary>
     /// Perlin noise for dirt layer heightmap generation.

@@ -40,9 +40,9 @@ namespace Blockland {
       Program.Events.OnKeyDown += Escape;
 
       World world = new World();
-      world.Create(3, 8);
+      world.Create(3, 4);
 
-      (mCamera["Transform"] as Transform).Move(16f, 32f * 4, 16f);
+      (mCamera["Transform"] as Transform).Move(16f, 32f * 3, 16f);
     }
 
     #endregion Methods
