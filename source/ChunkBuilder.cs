@@ -201,6 +201,8 @@ namespace Blockland {
         mChunks.TryGetValue(new Vector3i(chunk.Position.X, chunk.Position.Y - 1, chunk.Position.Z), out chunkBottom);
       }
 
+      bool[,,] blockCache = new bool[Chunk.Size + 2, Chunk.Size + 2, Chunk.Size + 2];
+
       // loop through blocks
       uint count = 0;
       foreach (var blockPair in chunk.Blocks) {
@@ -213,12 +215,26 @@ namespace Blockland {
         float z = position.Z * Block.Size;
 
         // sides
-        bool front = !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y, position.Z + 1));
-        bool back = !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y, position.Z - 1));
-        bool right = !chunk.Blocks.ContainsKey(new Vector3i(position.X + 1, position.Y, position.Z));
-        bool left = !chunk.Blocks.ContainsKey(new Vector3i(position.X - 1, position.Y, position.Z));
-        bool top = !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y + 1, position.Z));
-        bool bottom = !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y - 1, position.Z));
+        bool front = !blockCache[position.X + 1, position.Y + 1, position.Z + 2] && !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y, position.Z + 1));
+        bool back = !blockCache[position.X + 1, position.Y + 1, position.Z] && !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y, position.Z - 1));
+        bool right = !blockCache[position.X + 2, position.Y + 1, position.Z + 1] && !chunk.Blocks.ContainsKey(new Vector3i(position.X + 1, position.Y, position.Z));
+        bool left = !blockCache[position.X, position.Y + 1, position.Z + 1] && !chunk.Blocks.ContainsKey(new Vector3i(position.X - 1, position.Y, position.Z));
+        bool top = !blockCache[position.X + 1, position.Y + 2, position.Z + 1] && !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y + 1, position.Z));
+        bool bottom = !blockCache[position.X + 1, position.Y, position.Z + 1] && !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y - 1, position.Z));
+
+        // update cache
+        if (!front)
+          blockCache[position.X + 1, position.Y + 1, position.Z + 2] = true;
+        if (!back)
+          blockCache[position.X + 1, position.Y + 1, position.Z] = true;
+        if (!right)
+          blockCache[position.X + 2, position.Y + 1, position.Z + 1] = true;
+        if (!left)
+          blockCache[position.X, position.Y + 1, position.Z + 1] = true;
+        if (!top)
+          blockCache[position.X + 1, position.Y + 2, position.Z + 1] = true;
+        if (!bottom)
+          blockCache[position.X + 1, position.Y, position.Z + 1] = true;
 
         // consider neighbor chunks
 

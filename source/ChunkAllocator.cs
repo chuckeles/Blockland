@@ -33,13 +33,13 @@ namespace Blockland {
     /// Thread entry point.
     /// </summary>
     private void Start() {
-      for (int x = -mRenderDistance / 2, xMax = (int)((mRenderDistance / 2f) + 0.5f); x < xMax; ++x)
-        for (int z = -mRenderDistance / 2, zMax = (int)((mRenderDistance / 2f) + 0.5f); z < zMax; ++z)
-          for (int y = 0; y < mHeight; ++y) {
-            lock (mChunksToGenerate) {
+      lock (mChunksToGenerate) {
+        for (int x = -mRenderDistance / 2, xMax = (int)((mRenderDistance / 2f) + 0.5f); x < xMax; ++x)
+          for (int z = -mRenderDistance / 2, zMax = (int)((mRenderDistance / 2f) + 0.5f); z < zMax; ++z)
+            for (int y = 0; y < mHeight; ++y) {
               mChunksToGenerate.Enqueue(new Chunk(x, y, z));
             }
-          }
+      }
     }
 
     #endregion Methods
