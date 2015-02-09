@@ -244,8 +244,8 @@ namespace Blockland {
             if (chunkFront.Blocks.ContainsKey(new Vector3i(position.X, position.Y, 0)))
               front = false;
           }
-          else
-            front = false;
+          else if (chunkFront == null)
+            front = mWorldBoundaries;
         }
 
         // back
@@ -254,8 +254,8 @@ namespace Blockland {
             if (chunkBack.Blocks.ContainsKey(new Vector3i(position.X, position.Y, Chunk.Size - 1)))
               back = false;
           }
-          else
-            back = false;
+          else if (chunkBack == null)
+            back = mWorldBoundaries;
         }
 
         // right
@@ -264,8 +264,8 @@ namespace Blockland {
             if (chunkRight.Blocks.ContainsKey(new Vector3i(0, position.Y, position.Z)))
               right = false;
           }
-          else
-            right = false;
+          else if (chunkRight == null)
+            right = mWorldBoundaries;
         }
 
         // left
@@ -274,8 +274,8 @@ namespace Blockland {
             if (chunkLeft.Blocks.ContainsKey(new Vector3i(Chunk.Size - 1, position.Y, position.Z)))
               left = false;
           }
-          else
-            left = false;
+          else if (chunkLeft == null)
+            left = mWorldBoundaries;
         }
 
         // top
@@ -294,8 +294,8 @@ namespace Blockland {
             if (chunkBottom.Blocks.ContainsKey(new Vector3i(position.X, Chunk.Size - 1, position.Z)))
               bottom = false;
           }
-          else
-            bottom = false;
+          else if (chunkBottom == null)
+            bottom = mWorldBoundaries;
         }
 
         // block texture
@@ -347,6 +347,11 @@ namespace Blockland {
     /// </summary>
     private void Start() {
       while (World.Current != null) {
+        if (mChunksToBuild.Count <= 0) {
+          Thread.Sleep(500);
+          continue;
+        }
+
         Chunk chunk;
         lock (mChunksToBuild) {
           if (mChunksToBuild.Count <= 0)
@@ -369,6 +374,11 @@ namespace Blockland {
     #endregion Methods
 
     #region Fields
+
+    /// <summary>
+    /// If true, builder will build sides on world boundaries.
+    /// </summary>
+    private static bool mWorldBoundaries = false;
 
     /// <summary>
     /// World's list of ready chunks.

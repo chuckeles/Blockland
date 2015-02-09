@@ -28,6 +28,11 @@ namespace Blockland {
         mHeightmap.OctaveCount = 4;
         mHeightmap.Frequency = 1 / 128f;
 
+        mTerrain = new FastNoise();
+        mTerrain.Seed = (int)(Random.Value * uint.MaxValue);
+        mTerrain.OctaveCount = 4;
+        mTerrain.Frequency = 1 / 86f;
+
         mDirtHeightmap = new FastNoise();
         mDirtHeightmap.Seed = (int)(Random.Value * uint.MaxValue);
         mDirtHeightmap.OctaveCount = 4;
@@ -54,6 +59,7 @@ namespace Blockland {
     private void Generate(Chunk chunk) {
       uint generatedBlocks = 0;
 
+      float worldHeight = mHeight * Chunk.Size;
       for (int x = 0; x < Chunk.Size; ++x)
         for (int z = 0; z < Chunk.Size; ++z) {
 
@@ -62,12 +68,26 @@ namespace Blockland {
 
           // normalize height
           height = (height + 1) / 2;
-          height = Chunk.Size * mHeight * (0.4f + height / 2);
+          height = 0.3f + height * 0.2f;
 
           // fill blocks
-          for (int y = 0; y < Chunk.Size; ++y) {
+          for (int y = Chunk.Size - 1; y >= 0; --y) {
+            // get detail value
+            float detail = (float)mTerrain.GetValue(x + chunk.Position.X * Chunk.Size, y + chunk.Position.Y * Chunk.Size, z + chunk.Position.Z * Chunk.Size);
+
+            // normalize it
+            detail = (detail + 1) / 2;
+
+            // apply gradient
+            float yGlob = y + chunk.Position.Y * Chunk.Size;
+
+            if (yGlob < worldHeight * height)
+              detail = 0;
+            else
+              detail *= (yGlob - worldHeight * height) / (worldHeight * 0.2f) * 2;
+
             // calculate depth
-            float depth = height - (y + chunk.Position.Y * Chunk.Size);
+            float depth = height * worldHeight - (y + chunk.Position.Y * Chunk.Size);
 
             // cave
             float cave = (float)mCaves.GetValue(
@@ -81,27 +101,9 @@ namespace Blockland {
             if (cave > 0.8f)
               continue;
 
-            // block type
-            Block.Type type = Block.Type.Stone;
-
-            // get dirt depth
-            float dirtDepth = (float)mDirtHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
-
-            // normalize it
-            dirtDepth = (dirtDepth + 1) / 2;
-            dirtDepth = Chunk.Size / 8 + dirtDepth * Chunk.Size / 2;
-
-            // grass at the top
-            if (depth <= 1)
-              type = Block.Type.Grass;
-
-            // is this dirt?
-            else if (depth < dirtDepth)
-              type = Block.Type.Dirt;
-
             // add block
-            if (depth > 0) {
-              chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
+            if (detail < 0.2f) {
+              chunk.Blocks.Add(new Vector3i(x, y, z), new Block(Block.Type.Stone));
               ++generatedBlocks;
             }
           }
@@ -113,6 +115,11 @@ namespace Blockland {
     /// </summary>
     private void Start() {
       while (World.Current != null) {
+        if (mChunksToGenerate.Count <= 0) {
+          Thread.Sleep(1000);
+          continue;
+        }
+
         Chunk chunk;
         lock (mChunksToGenerate) {
           if (mChunksToGenerate.Count <= 0)
@@ -147,6 +154,11 @@ namespace Blockland {
     /// Perlin noise for terrain heightmap generation.
     /// </summary>
     private static FastNoise mHeightmap;
+
+    /// <summary>
+    /// Perlin noise for terrain detail generation.
+    /// </summary>
+    private static FastNoise mTerrain;
 
     /// <summary>
     /// World height in chunks.
