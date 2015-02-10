@@ -1,5 +1,5 @@
 ﻿using LibNoise;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Blockland {
@@ -59,6 +59,20 @@ namespace Blockland {
     private void Generate(Chunk chunk) {
       uint generatedBlocks = 0;
 
+      // chunk 2D position
+      Vector2i position2d = new Vector2i(chunk.Position.X, chunk.Position.Z);
+
+      // world heights
+      int[,] worldHeights;
+      lock (mWorldHeights) {
+        if (mWorldHeights.ContainsKey(position2d))
+          worldHeights = mWorldHeights[position2d];
+        else {
+          worldHeights = new int[Chunk.Size, Chunk.Size];
+          mWorldHeights[position2d] = worldHeights;
+        }
+      }
+
       float worldHeight = mHeight * Chunk.Size;
       for (int x = 0; x < Chunk.Size; ++x)
         for (int z = 0; z < Chunk.Size; ++z) {
@@ -69,6 +83,13 @@ namespace Blockland {
           // normalize height
           height = (height + 1) / 2;
           height = 0.3f + height * 0.2f;
+
+          // get dirt depth
+          float dirtDepth = (float)mDirtHeightmap.GetValue(x + chunk.Position.X * Chunk.Size, 0, z + chunk.Position.Z * Chunk.Size);
+
+          // normalize dirt depth
+          dirtDepth = (dirtDepth + 1) / 2;
+          dirtDepth = Chunk.Size / 8 + dirtDepth * Chunk.Size;
 
           // fill blocks
           for (int y = Chunk.Size - 1; y >= 0; --y) {
@@ -86,8 +107,18 @@ namespace Blockland {
             else
               detail *= (yGlob - worldHeight * height) / (worldHeight * 0.1f);
 
-            // calculate depth
-            float depth = height * worldHeight - (y + chunk.Position.Y * Chunk.Size);
+            if (detail > 0.2f)
+              continue;
+
+            // get or set world height
+            float depth;
+
+            if (worldHeights[x, z] == 0 && yGlob > worldHeight * height) {
+              worldHeights[x, z] = (int)yGlob;
+              depth = 0;
+            }
+            else
+              depth = worldHeights[x, z] - yGlob;
 
             // cave
             float cave = (float)mCaves.GetValue(
@@ -101,11 +132,17 @@ namespace Blockland {
             if (cave > 0.8f)
               continue;
 
+            // block type
+            Block.Type type = Block.Type.Stone;
+
+            if (depth < 1)
+              type = Block.Type.Grass;
+            else if (depth < dirtDepth + Random.Range(-2, 2))
+              type = Block.Type.Dirt;
+
             // add block
-            if (detail < 0.2f) {
-              chunk.Blocks.Add(new Vector3i(x, y, z), new Block(Block.Type.Stone));
-              ++generatedBlocks;
-            }
+            chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
+            ++generatedBlocks;
           }
         }
     }
@@ -159,6 +196,11 @@ namespace Blockland {
     /// Perlin noise for terrain detail generation.
     /// </summary>
     private static FastNoise mTerrain;
+
+    /// <summary>
+    /// Dictionary of world's grass levels.
+    /// </summary>
+    private static Dictionary<Vector2i, int[,]> mWorldHeights = new Dictionary<Vector2i, int[,]>();
 
     /// <summary>
     /// World height in chunks.

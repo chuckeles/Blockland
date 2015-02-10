@@ -38,7 +38,7 @@ namespace Blockland {
           for (int z = -mRenderDistance / 2, zMax = (int)((mRenderDistance / 2f) + 0.5f); z < zMax; ++z)
             for (int y = 0; y < mHeight; ++y) {
               Chunk chunk = new Chunk(x, y, z);
-              mChunksToGenerate.Enqueue((int)(new Vector3i(chunk.Position.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z).Length * 90), chunk);
+              mChunksToGenerate.Enqueue((int)(new Vector3i(chunk.Position.X, mHeight - chunk.Position.Y, chunk.Position.Z).Length * 90), chunk);
             }
       }
     }

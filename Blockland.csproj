@@ -101,6 +101,7 @@
     <Compile Include="source\ArrayTexture.cs" />
     <Compile Include="source\Texture.cs" />
     <Compile Include="source\Transform.cs" />
+    <Compile Include="source\Vector2i.cs" />
     <Compile Include="source\Vector3i.cs" />
     <Compile Include="source\Window.cs" />
     <Compile Include="source\World.cs" />
