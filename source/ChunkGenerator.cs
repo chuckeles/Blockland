@@ -107,8 +107,15 @@ namespace Blockland {
             else
               detail *= (yGlob - worldHeight * height) / (worldHeight * 0.1f);
 
-            if (detail > 0.2f)
+            if (detail > 0.2f) {
+              if (yGlob > worldHeight * height && worldHeights[x, z] > yGlob) {
+                worldHeights[x, z] -= 6;
+                if (worldHeights[x, z] < yGlob)
+                  worldHeights[x, z] = (int)yGlob - 1;
+              }
+
               continue;
+            }
 
             // get or set world height
             float depth;

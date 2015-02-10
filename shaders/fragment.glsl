@@ -14,18 +14,29 @@ uniform sampler2DArray uNormalTexture;
 // output
 out vec4 outColor;
 
+// ambient lighting model
+float Ambient() {
+  return 0.2;
+}
+
+// diffuse lighting model
+float Diffuse(vec3 normal) {
+  float sunDotNormal = max(dot(EyeSun, normal), 0.0);
+  float sunDotNormal2 = max(dot(EyeSun2, normal), 0.0);
+  
+  float diffuse = 0.8 * sunDotNormal + 0.2 * sunDotNormal2;
+  
+  return Ambient() + diffuse;
+}
+
 // phong lighting model
 float PhongModel(vec3 position, vec3 normal) {
   vec3 v = normalize(-position);
   vec3 h = normalize(v + EyeSun);
-  float sunDotNormal = max(dot(EyeSun, normal), 0.0);
-  float sunDotNormal2 = max(dot(EyeSun2, normal), 0.0);
   
-  float ambient = 0.2;
-  float diffuse = 0.8 * sunDotNormal + 0.2 * sunDotNormal2;
   float specular = pow(max(dot(v, h), 0.0), 40.0) * 0.4;
   
-  return ambient + diffuse + specular;
+  return Diffuse(normal) + specular;
 }
 
 void main() {
@@ -36,7 +47,7 @@ void main() {
   float fog = pow(e, -pow(length(EyePosition) * fogDensity, 2));
   
   // calculate light
-  float light = PhongModel(EyePosition, EyeNormal);
+  float light = Diffuse(EyeNormal);
   
   // get texture color
   vec4 texColor = texture(uTexture, TexCoord);
