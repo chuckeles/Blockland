@@ -48,6 +48,14 @@ namespace Blockland {
     #region Methods
 
     /// <summary>
+    /// Use the array texture.
+    /// </summary>
+    /// <param name="textureUnit">Target texture unit</param>
+    public static void Use(int textureUnit = 0) {
+      GL.ActiveTexture(mUnits[textureUnit]);
+    }
+
+    /// <summary>
     /// Bind the array texture.
     /// </summary>
     public void Bind() {
@@ -124,17 +132,6 @@ namespace Blockland {
       ++mLoadedLayers;
     }
 
-    /// <summary>
-    /// Use the array texture.
-    /// </summary>
-    /// <param name="textureUnit">Target texture unit</param>
-    /// <param name="bind">Whether to automatically bind the texture</param>
-    public void Use(int textureUnit = 0, bool bind = true) {
-      GL.ActiveTexture(mUnits[textureUnit]);
-      if (bind)
-        Bind();
-    }
-
     #endregion Methods
 
     #region Properties
@@ -171,6 +168,20 @@ namespace Blockland {
     #region Fields
 
     /// <summary>
+    /// Array of texture units for better indexing.
+    /// </summary>
+    private static TextureUnit[] mUnits = {
+      TextureUnit.Texture0,
+      TextureUnit.Texture1,
+      TextureUnit.Texture2,
+      TextureUnit.Texture3,
+      TextureUnit.Texture4,
+      TextureUnit.Texture5,
+      TextureUnit.Texture6,
+      TextureUnit.Texture7
+    };
+
+    /// <summary>
     /// OpenGL id.
     /// </summary>
     private int mId = 0;
@@ -189,20 +200,6 @@ namespace Blockland {
     /// The name of the resource.
     /// </summary>
     private string mName;
-
-    /// <summary>
-    /// Array of texture units for better indexing.
-    /// </summary>
-    private TextureUnit[] mUnits = {
-      TextureUnit.Texture0,
-      TextureUnit.Texture1,
-      TextureUnit.Texture2,
-      TextureUnit.Texture3,
-      TextureUnit.Texture4,
-      TextureUnit.Texture5,
-      TextureUnit.Texture6,
-      TextureUnit.Texture7
-    };
 
     #endregion Fields
 

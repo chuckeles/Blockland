@@ -6,8 +6,9 @@ in vec3 EyeSun;
 in vec3 EyePosition;
 in vec3 EyeNormal;
 
-// texture
+// textures
 uniform sampler2DArray uTexture;
+uniform sampler2DArray uNormalTexture;
 
 // output
 out vec4 outColor;
@@ -20,7 +21,7 @@ float PhongModel(vec3 position, vec3 normal) {
   
   float ambient = 0.2;
   float diffuse = 0.8 * sunDotNormal;
-  float specular = pow(max(dot(v, h), 0.0), 40.0) * 0.8;
+  float specular = pow(max(dot(v, h), 0.0), 40.0) * 0.4;
   
   return ambient + diffuse + specular;
 }

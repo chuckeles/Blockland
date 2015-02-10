@@ -6,8 +6,9 @@ in vec3 EyeSun;
 in vec3 EyePosition;
 in vec3 EyeNormal;
 
-// texture
+// textures
 uniform sampler2DArray uTexture;
+uniform sampler2DArray uNormalTexture;
 
 // output
 out vec4 outColor;

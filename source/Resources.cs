@@ -34,19 +34,27 @@ namespace Blockland {
       shader.Link();
 
       shader.Use();
-      shader.Uniform("Texture", 0);
+      shader.Uniform("uTexture", 0);
+      shader.Uniform("uNormalTexture", 1);
 
       mResources.Add(vertexShader.Name, vertexShader);
       mResources.Add(fragmentShader.Name, fragmentShader);
 
+      ArrayTexture.Use(0);
       ArrayTexture blockTexture = new ArrayTexture("BlockTextureArray", 64, 64, 3);
       blockTexture.Load("textures/Stone.png");
       blockTexture.Load("textures/Dirt.png");
       blockTexture.Load("textures/Grass.png");
 
-      blockTexture.Use(0);
-
       mResources.Add(blockTexture.Name, blockTexture);
+
+      ArrayTexture.Use(1);
+      ArrayTexture blockNormalTexture = new ArrayTexture("BlockNormalTextureArray", 64, 64, 3);
+      blockNormalTexture.Load("textures/StoneNormal.png");
+      blockNormalTexture.Load("textures/DirtNormal.png");
+      blockNormalTexture.Load("textures/GrassNormal.png");
+
+      mResources.Add(blockNormalTexture.Name, blockNormalTexture);
     }
 
     #endregion Methods
