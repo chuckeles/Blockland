@@ -45,6 +45,15 @@ namespace Blockland {
     #region Properties
 
     /// <summary>
+    /// Get the game object to which this component is attached.
+    /// </summary>
+    public GameObject GameObject {
+      get {
+        return mGameObject;
+      }
+    }
+
+    /// <summary>
     /// Get component name.
     /// </summary>
     public string Name {

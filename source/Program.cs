@@ -1,7 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using System;
-
-namespace Blockland {
+﻿namespace Blockland {
 
   /// <summary>
   /// Represents the Blockland program. Contains program-wide events and the state of the program.

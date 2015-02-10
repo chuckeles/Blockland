@@ -34,7 +34,7 @@ namespace Blockland {
     public void Create(int renderDistance, int height) {
       mHeight = height;
 
-      new ChunkAllocator(mChunksToGenerate, renderDistance, height);
+      new ChunkAllocator(mChunksToGenerate, mChunks, mChunksToRemove, renderDistance, height);
       new ChunkGenerator(mChunksToGenerate, mChunksToBuild, height);
       new ChunkGenerator(mChunksToGenerate, mChunksToBuild, height);
       new ChunkBuilder(mChunksToBuild, mChunksToBuildMain, mChunks);
@@ -59,6 +59,20 @@ namespace Blockland {
     /// </summary>
     /// <param name="deltaTime">Not used</param>
     public void Update(float deltaTime) {
+      // remove chunks
+      lock (mChunksToRemove) {
+        while (mChunksToRemove.Count > 0) {
+          Chunk chunk = mChunksToRemove.Dequeue() as Chunk;
+
+          chunk.GameObject.RemoveComponent("Chunk");
+
+          State.Current.RemoveGameObject(chunk.GameObject);
+          lock (mChunks) {
+            mChunks.Remove(chunk.Position);
+          }
+        }
+      }
+
       Transform camera;
       if (!State.Current.Camera.HasComponent("Transform"))
         camera = new Transform();
@@ -189,6 +203,15 @@ namespace Blockland {
       }
     }
 
+    /// <summary>
+    /// Get queue of chunks to remove.
+    /// </summary>
+    public Queue ChunksToRemove {
+      get {
+        return mChunksToRemove;
+      }
+    }
+
     #endregion Properties
 
     #region Fields
@@ -222,6 +245,11 @@ namespace Blockland {
     /// Queue of chunks waiting to be generated.
     /// </summary>
     private PriorityQueue<Chunk> mChunksToGenerate = new PriorityQueue<Chunk>();
+
+    /// <summary>
+    /// Queue of chunks to remove.
+    /// </summary>
+    private Queue mChunksToRemove = new Queue();
 
     #endregion Fields
 

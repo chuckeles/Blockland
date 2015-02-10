@@ -155,7 +155,7 @@ namespace Blockland {
 
       while (World.Current != null) {
         if (mChunksToGenerate.Count <= 0) {
-          Thread.Sleep(1000);
+          Thread.Sleep(500);
           continue;
         }
 
