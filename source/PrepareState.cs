@@ -16,7 +16,7 @@ namespace Blockland {
     public override void Start() {
       base.Start();
 
-      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)Window.Instance.Width / Window.Instance.Height, .1f, 1000f);
+      Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, (float)Window.Instance.Width / Window.Instance.Height, .1f, 1000f);
       ShaderProgram.Current.Uniform("Projection", ref projection);
 
       End();

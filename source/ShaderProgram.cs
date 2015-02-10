@@ -111,8 +111,23 @@ namespace Blockland {
     /// <param name="uniformName">Name of the uniform (e. g. "View")</param>
     /// <param name="matrix">Matrix to upload</param>
     public void Uniform(string uniformName, ref Matrix4 matrix) {
-      int uniform = GL.GetUniformLocation(mId, uniformName);
-      GL.UniformMatrix4(uniform, false, ref matrix);
+      if (uniformName == "Projection")
+        mProjection = matrix;
+      else if (uniformName == "View")
+        mView = matrix;
+      else if (uniformName == "Model") {
+        Matrix4 modelView = matrix * mView;
+        Matrix4 modelViewProjection = modelView * mProjection;
+
+        int uniform = GL.GetUniformLocation(mId, "ModelView");
+        GL.UniformMatrix4(uniform, false, ref modelView);
+        uniform = GL.GetUniformLocation(mId, "ModelViewProjection");
+        GL.UniformMatrix4(uniform, false, ref modelViewProjection);
+      }
+      else {
+        int uniform = GL.GetUniformLocation(mId, uniformName);
+        GL.UniformMatrix4(uniform, false, ref matrix);
+      }
     }
 
     /// <summary>
@@ -185,9 +200,19 @@ namespace Blockland {
     private int mId = 0;
 
     /// <summary>
+    /// The projection matrix.
+    /// </summary>
+    private Matrix4 mProjection;
+
+    /// <summary>
     /// List of attached shaders.
     /// </summary>
     private List<Shader> mShaders = new List<Shader>();
+
+    /// <summary>
+    /// The view matrix.
+    /// </summary>
+    private Matrix4 mView;
 
     #endregion Fields
   }

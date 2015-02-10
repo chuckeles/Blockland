@@ -15,7 +15,7 @@ void main() {
   float fogDensity = 0.0025;
 
   float light = 0.5 + Normal.x * 0.1 + Normal.y * 0.4 + Normal.z * 0.05;
-
-  vec4 color = texture(Texture, TexCoord) * vec4(light, light, light, 1.0);
-  outColor = mix(fogColor, color, pow(e, -pow(Depth * fogDensity, 2)));
+  
+  vec4 texColor = texture(Texture, TexCoord);
+  outColor = mix(fogColor, texColor * light, pow(e, -pow(Depth * fogDensity, 2)));
 }
