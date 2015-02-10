@@ -12,32 +12,18 @@ uniform mat3 uNormal;
 
 // output
 out vec3 TexCoord;
-out float Depth;
-out float Light;
+out vec3 EyeSun;
+out vec3 EyePosition;
+out vec3 EyeNormal;
 
 void main() {
-  // eye position
-  vec3 eyePosition = (uModelView * vec4(inPosition, 1.0)).xyz;
-  
   // sun direction
   vec3 sun = normalize(vec3(0.3, 1.0, 0.6));
 
   // calculate output
   gl_Position = uModelViewProjection * vec4(inPosition, 1.0);
   TexCoord = inTexCoord;
-  Depth = length(eyePosition);
-  
-  // calculate light
-  vec3 eyeSun = normalize(uNormal * sun);
-  vec3 eyeNormal = normalize(uNormal * inNormal);
-  
-  vec3 v = normalize(-eyePosition);
-  vec3 r = reflect(-eyeSun, eyeNormal);
-  float sunDotNormal = max(dot(eyeSun, eyeNormal), 0.0);
-  
-  float ambient = 0.2;
-  float diffuse = 0.8 * sunDotNormal;
-  float specular = pow(max(dot(v, r), 0.0), 100.0) * 0.6;
-  
-  Light = ambient + diffuse + specular;
+  EyeSun = normalize(uNormal * sun);
+  EyePosition = (uModelView * vec4(inPosition, 1.0)).xyz;
+  EyeNormal = normalize(uNormal * inNormal);
 }
