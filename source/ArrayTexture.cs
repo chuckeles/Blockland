@@ -38,10 +38,10 @@ namespace Blockland {
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~ArrayTexture() {
-      if (Window.Instance != null && Window.Instance.Open)
-        Dispose();
-    }
+    //~ArrayTexture() {
+    //  if (Window.Instance != null && Window.Instance.Open)
+    //    Dispose();
+    //}
 
     #endregion Constructor
 

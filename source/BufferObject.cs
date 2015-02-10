@@ -31,10 +31,10 @@ namespace Blockland {
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~BufferObject() {
-      if (Window.Instance != null && Window.Instance.Open)
-        Dispose();
-    }
+    //~BufferObject() {
+    //  if (Window.Instance != null && Window.Instance.Open)
+    //    Dispose();
+    //}
 
     #endregion Constructor
 

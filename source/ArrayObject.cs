@@ -14,10 +14,10 @@ namespace Blockland {
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~ArrayObject() {
-      if (Window.Instance != null && Window.Instance.Open)
-        Dispose();
-    }
+    //~ArrayObject() {
+    //  if (Window.Instance != null && Window.Instance.Open)
+    //    Dispose();
+    //}
 
     #endregion Constructor
 

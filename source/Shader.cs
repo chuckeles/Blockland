@@ -50,10 +50,10 @@ namespace Blockland {
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~Shader() {
-      if (Window.Instance != null && Window.Instance.Open)
-        Dispose();
-    }
+    //~Shader() {
+    //  if (Window.Instance != null && Window.Instance.Open)
+    //    Dispose();
+    //}
 
     #endregion Constructor
 

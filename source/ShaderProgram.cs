@@ -24,10 +24,10 @@ namespace Blockland {
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~ShaderProgram() {
-      if (Window.Instance != null && Window.Instance.Open)
-        Dispose();
-    }
+    //~ShaderProgram() {
+    //  if (Window.Instance != null && Window.Instance.Open)
+    //    Dispose();
+    //}
 
     #endregion Constructor
 
