@@ -151,6 +151,8 @@ namespace Blockland {
     /// Thread entry point.
     /// </summary>
     private void Start() {
+      Transform camera = State.Current.Camera["Transform"] as Transform;
+
       while (World.Current != null) {
         if (mChunksToGenerate.Count <= 0) {
           Thread.Sleep(1000);
@@ -167,8 +169,9 @@ namespace Blockland {
 
         Generate(chunk);
 
+        Vector2i cameraPosition = new Vector2i((int)(camera.Position.X / (Chunk.Size * Block.Size)), (int)(camera.Position.Z / (Chunk.Size * Block.Size)));
         lock (mChunksToBuild) {
-          mChunksToBuild.Enqueue((int)(new Vector3i(chunk.Position.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z).Length * 90), chunk);
+          mChunksToBuild.Enqueue((int)(new Vector3i(chunk.Position.X - cameraPosition.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z - cameraPosition.Y).Length * 90), chunk);
         }
       }
     }

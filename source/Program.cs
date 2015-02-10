@@ -21,26 +21,7 @@ namespace Blockland {
       State.Add(new PrepareState());
       State.Add(new GameState());
 
-      try {
-        State.Run();
-      }
-      catch (Exception e) {
-        ErrorCode glError = GL.GetError();
-
-        if (glError != ErrorCode.NoError) {
-          // TODO: log
-
-          throw new Exception("OpenGL Error: " + glError, e);
-        }
-        else {
-          // TODO: log
-
-          throw;
-        }
-      }
-      finally {
-        Window.Instance.Close();
-      }
+      State.Run();
 
     }
 

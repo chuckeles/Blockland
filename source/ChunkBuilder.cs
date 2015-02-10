@@ -223,6 +223,7 @@ namespace Blockland {
         bool bottom = !blockCache[position.X + 1, position.Y, position.Z + 1] && !chunk.Blocks.ContainsKey(new Vector3i(position.X, position.Y - 1, position.Z));
 
         // update cache
+        blockCache[position.X + 1, position.Y + 1, position.Z + 1] = true;
         if (!front)
           blockCache[position.X + 1, position.Y + 1, position.Z + 2] = true;
         if (!back)

@@ -59,6 +59,13 @@ namespace Blockland {
     /// </summary>
     /// <param name="deltaTime">Not used</param>
     public void Update(float deltaTime) {
+      Transform camera;
+      if (!State.Current.Camera.HasComponent("Transform"))
+        camera = new Transform();
+      else
+        camera = State.Current.Camera["Transform"] as Transform;
+      Vector2i cameraPosition = new Vector2i((int)(camera.Position.X / (Chunk.Size * Block.Size)), (int)(camera.Position.Z / (Chunk.Size * Block.Size)));
+
       while (mChunksToBuildMain.Count > 0) {
 
         ChunkBuilder.BuiltChunk builtChunk;
@@ -91,17 +98,17 @@ namespace Blockland {
           // add chunks to build queue
           lock (mChunksToBuild) {
             if (chunkFront != null)
-              mChunksToBuild.Enqueue((int)(new Vector3i(chunkFront.Position.X, chunkFront.Position.Y - mHeight / 2, chunkFront.Position.Z).Length * 100), chunkFront);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkFront.Position.X - cameraPosition.X, chunkFront.Position.Y - mHeight / 2, chunkFront.Position.Z - cameraPosition.Y).Length * 100), chunkFront);
             if (chunkBack != null)
-              mChunksToBuild.Enqueue((int)(new Vector3i(chunkBack.Position.X, chunkBack.Position.Y - mHeight / 2, chunkBack.Position.Z).Length * 100), chunkBack);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkBack.Position.X - cameraPosition.X, chunkBack.Position.Y - mHeight / 2, chunkBack.Position.Z - cameraPosition.Y).Length * 100), chunkBack);
             if (chunkRight != null)
-              mChunksToBuild.Enqueue((int)(new Vector3i(chunkRight.Position.X, chunkRight.Position.Y - mHeight / 2, chunkRight.Position.Z).Length * 100), chunkRight);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkRight.Position.X - cameraPosition.X, chunkRight.Position.Y - mHeight / 2, chunkRight.Position.Z - cameraPosition.Y).Length * 100), chunkRight);
             if (chunkLeft != null)
-              mChunksToBuild.Enqueue((int)(new Vector3i(chunkLeft.Position.X, chunkLeft.Position.Y - mHeight / 2, chunkLeft.Position.Z).Length * 100), chunkLeft);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkLeft.Position.X - cameraPosition.X, chunkLeft.Position.Y - mHeight / 2, chunkLeft.Position.Z - cameraPosition.Y).Length * 100), chunkLeft);
             if (chunkTop != null)
-              mChunksToBuild.Enqueue((int)(new Vector3i(chunkTop.Position.X, chunkTop.Position.Y - mHeight / 2, chunkTop.Position.Z).Length * 100), chunkTop);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkTop.Position.X - cameraPosition.X, chunkTop.Position.Y - mHeight / 2, chunkTop.Position.Z - cameraPosition.Y).Length * 100), chunkTop);
             if (chunkBottom != null)
-              mChunksToBuild.Enqueue((int)(new Vector3i(chunkBottom.Position.X, chunkBottom.Position.Y - mHeight / 2, chunkBottom.Position.Z).Length * 100), chunkBottom);
+              mChunksToBuild.Enqueue((int)(new Vector3i(chunkBottom.Position.X - cameraPosition.X, chunkBottom.Position.Y - mHeight / 2, chunkBottom.Position.Z - cameraPosition.Y).Length * 100), chunkBottom);
           }
 
           lock (mChunks) {
