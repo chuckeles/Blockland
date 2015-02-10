@@ -3,6 +3,7 @@
 // input
 in vec3 TexCoord;
 in vec3 EyeSun;
+in vec3 EyeSun2;
 in vec3 EyePosition;
 in vec3 EyeNormal;
 
@@ -18,9 +19,10 @@ float PhongModel(vec3 position, vec3 normal) {
   vec3 v = normalize(-position);
   vec3 h = normalize(v + EyeSun);
   float sunDotNormal = max(dot(EyeSun, normal), 0.0);
+  float sunDotNormal2 = max(dot(EyeSun2, normal), 0.0);
   
   float ambient = 0.2;
-  float diffuse = 0.8 * sunDotNormal;
+  float diffuse = 0.8 * sunDotNormal + 0.2 * sunDotNormal2;
   float specular = pow(max(dot(v, h), 0.0), 40.0) * 0.4;
   
   return ambient + diffuse + specular;
