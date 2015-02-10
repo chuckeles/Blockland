@@ -119,7 +119,8 @@ namespace Blockland {
         // calculate matrices
         Matrix4 modelView = matrix * mView;
         Matrix4 modelViewProjection = modelView * mProjection;
-        Matrix4 normal = modelView.Inverted();
+        Matrix3 normal = new Matrix3(modelView.Row0.Xyz, modelView.Row1.Xyz, modelView.Row2.Xyz);
+        normal.Invert();
         normal.Transpose();
 
         // upload them
@@ -128,7 +129,7 @@ namespace Blockland {
         uniform = GL.GetUniformLocation(mId, "uModelViewProjection");
         GL.UniformMatrix4(uniform, false, ref modelViewProjection);
         uniform = GL.GetUniformLocation(mId, "uNormal");
-        GL.UniformMatrix4(uniform, false, ref normal);
+        GL.UniformMatrix3(uniform, false, ref normal);
       }
       else {
         int uniform = GL.GetUniformLocation(mId, uniformName);
