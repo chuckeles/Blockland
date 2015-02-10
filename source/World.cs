@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Blockland {
 
@@ -43,12 +44,16 @@ namespace Blockland {
       new ChunkBuilder(mChunksToBuild, mChunksToBuildMain, mChunks);
 
       Program.Events.OnUpdate += Update;
+
+      mClock.Start();
     }
 
     /// <summary>
     /// Destroy the world.
     /// </summary>
     public void Destroy() {
+      mClock.Stop();
+
       Program.Events.OnUpdate -= Update;
 
       mCurrent = null;
@@ -73,6 +78,7 @@ namespace Blockland {
         }
       }
 
+      // get camera position
       Transform camera;
       if (!State.Current.Camera.HasComponent("Transform"))
         camera = new Transform();
@@ -80,6 +86,21 @@ namespace Blockland {
         camera = State.Current.Camera["Transform"] as Transform;
       Vector2i cameraPosition = new Vector2i((int)(camera.Position.X / (Chunk.Size * Block.Size)), (int)(camera.Position.Z / (Chunk.Size * Block.Size)));
 
+      // update priorities
+      if (mClock.Elapsed.Seconds >= 1) {
+        lock (mChunksToBuild) {
+          PriorityQueue<Chunk> newQueue = new PriorityQueue<Chunk>();
+
+          while (mChunksToBuild.Count > 0) {
+            Chunk chunk = mChunksToBuild.Dequeue();
+            newQueue.Enqueue((int)(new Vector3i(chunk.Position.X - cameraPosition.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z - cameraPosition.Y).Length * 100), chunk);
+          }
+
+          mChunksToBuild.Update(newQueue);
+        }
+      }
+
+      // process chunks
       while (mChunksToBuildMain.Count > 0) {
 
         ChunkBuilder.BuiltChunk builtChunk;
@@ -220,6 +241,11 @@ namespace Blockland {
     /// Static instance.
     /// </summary>
     private static World mCurrent;
+
+    /// <summary>
+    /// Priority updating clock.
+    /// </summary>
+    private Stopwatch mClock = new Stopwatch();
 
     /// <summary>
     /// World height in chunks.

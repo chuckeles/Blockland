@@ -54,6 +54,14 @@ namespace Blockland {
       }
     }
 
+    /// <summary>
+    /// Set this queue to the new queue.
+    /// </summary>
+    /// <param name="newQueue">New queue</param>
+    public void Update(PriorityQueue<T> newQueue) {
+      mList = newQueue.mList;
+    }
+
     #endregion Methods
 
     #region Properties
