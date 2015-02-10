@@ -36,8 +36,10 @@
     /// Create a new block.
     /// </summary>
     /// <param name="type">Block type</param>
-    public Block(Type type) {
+    /// <param name="light">Block light</param>
+    public Block(Type type, float light = 0) {
       BlockType = type;
+      Light = light;
     }
 
     #endregion Constructor
@@ -53,6 +55,11 @@
     /// The type of the block.
     /// </summary>
     public Type BlockType;
+
+    /// <summary>
+    /// Block light.
+    /// </summary>
+    public float Light;
 
     #endregion Fields
 

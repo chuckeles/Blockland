@@ -4,6 +4,7 @@
 in vec3 inPosition;
 in vec3 inNormal;
 in vec3 inTexCoord;
+in float inLight;
 
 // matrices
 uniform mat4 uModelView;
@@ -16,6 +17,7 @@ out vec3 EyeSun;
 out vec3 EyeSun2;
 out vec3 EyePosition;
 out vec3 EyeNormal;
+out float BlockLight;
 
 void main() {
   // sun directions
@@ -29,4 +31,5 @@ void main() {
   EyeSun2 = normalize(uNormal * sun2);
   EyePosition = (uModelView * vec4(inPosition, 1.0)).xyz;
   EyeNormal = normalize(uNormal * inNormal);
+  BlockLight = inLight;
 }

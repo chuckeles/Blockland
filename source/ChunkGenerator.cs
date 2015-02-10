@@ -73,6 +73,17 @@ namespace Blockland {
         }
       }
 
+      // block lights
+      float[,] blockLights;
+      lock (mWorldLights) {
+        if (mWorldLights.ContainsKey(position2d))
+          blockLights = mWorldLights[position2d];
+        else {
+          blockLights = new float[Chunk.Size, Chunk.Size];
+          mWorldLights[position2d] = blockLights;
+        }
+      }
+
       float worldHeight = mHeight * Chunk.Size;
       for (int x = 0; x < Chunk.Size; ++x)
         for (int z = 0; z < Chunk.Size; ++z) {
@@ -139,6 +150,15 @@ namespace Blockland {
             if (cave > 0.8f)
               continue;
 
+            // adjust light
+            float light = blockLights[x, z];
+            if (light > 1f) {
+              light = 1f;
+              blockLights[x, z] = 1f;
+            }
+            else if (light < 1f)
+              blockLights[x, z] += 0.1f;
+
             // block type
             Block.Type type = Block.Type.Stone;
 
@@ -148,7 +168,7 @@ namespace Blockland {
               type = Block.Type.Dirt;
 
             // add block
-            chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type));
+            chunk.Blocks.Add(new Vector3i(x, y, z), new Block(type, 1f - light));
             ++generatedBlocks;
           }
         }
@@ -211,6 +231,11 @@ namespace Blockland {
     /// Dictionary of world's grass levels.
     /// </summary>
     private static Dictionary<Vector2i, int[,]> mWorldHeights = new Dictionary<Vector2i, int[,]>();
+
+    /// <summary>
+    /// Dictionary of block lights.
+    /// </summary>
+    private static Dictionary<Vector2i, float[,]> mWorldLights = new Dictionary<Vector2i, float[,]>();
 
     /// <summary>
     /// World height in chunks.

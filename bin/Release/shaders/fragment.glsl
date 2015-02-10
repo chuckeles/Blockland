@@ -6,6 +6,7 @@ in vec3 EyeSun;
 in vec3 EyeSun2;
 in vec3 EyePosition;
 in vec3 EyeNormal;
+in float BlockLight;
 
 // textures
 uniform sampler2DArray uTexture;
@@ -16,7 +17,7 @@ out vec4 outColor;
 
 // ambient lighting model
 float Ambient() {
-  return 0.2;
+  return 0.1;
 }
 
 // diffuse lighting model
@@ -26,7 +27,7 @@ float Diffuse(vec3 normal) {
   
   float diffuse = 0.8 * sunDotNormal + 0.2 * sunDotNormal2;
   
-  return Ambient() + diffuse;
+  return Ambient() + diffuse * BlockLight;
 }
 
 // phong lighting model

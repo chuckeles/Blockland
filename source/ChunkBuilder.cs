@@ -62,14 +62,15 @@ namespace Blockland {
     /// <param name="elementOffset">
     /// How much to offset the side's elements (how much elements there already are)
     /// </param>
-    public void AddSide(float x, float y, float z, Block.Side side, float texture, List<float> vertices, List<uint> elements, uint elementOffset) {
+    /// <param name="light">Light value to add to the side</param>
+    public void AddSide(float x, float y, float z, Block.Side side, float texture, List<float> vertices, List<uint> elements, uint elementOffset, float light) {
       switch (side) {
         case Block.Side.Front:
           float[] frontVertices = {
-                                  x, y, z+Block.Size,                       0f, 0f, 1f, 0f, 0f, texture,
-                                  x+Block.Size, y, z+Block.Size,            0f, 0f, 1f, 1f, 0f, texture,
-                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 0f, 1f, 1f, 1f, texture,
-                                  x, y+Block.Size, z+Block.Size,            0f, 0f, 1f, 0f, 1f, texture
+                                  x, y, z+Block.Size,                       0f, 0f, 1f, 0f, 0f, texture, light,
+                                  x+Block.Size, y, z+Block.Size,            0f, 0f, 1f, 1f, 0f, texture, light,
+                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 0f, 1f, 1f, 1f, texture, light,
+                                  x, y+Block.Size, z+Block.Size,            0f, 0f, 1f, 0f, 1f, texture, light
                                 };
           vertices.AddRange(frontVertices);
 
@@ -83,10 +84,10 @@ namespace Blockland {
 
         case Block.Side.Back:
           float[] backVertices = {
-                                  x+Block.Size, y, z,            0f, 0f, -1f, 0f, 0f, texture,
-                                  x, y, z,                       0f, 0f, -1f, 1f, 0f, texture,
-                                  x, y+Block.Size, z,            0f, 0f, -1f, 1f, 1f, texture,
-                                  x+Block.Size, y+Block.Size, z, 0f, 0f, -1f, 0f, 1f, texture
+                                  x+Block.Size, y, z,            0f, 0f, -1f, 0f, 0f, texture, light,
+                                  x, y, z,                       0f, 0f, -1f, 1f, 0f, texture, light,
+                                  x, y+Block.Size, z,            0f, 0f, -1f, 1f, 1f, texture, light,
+                                  x+Block.Size, y+Block.Size, z, 0f, 0f, -1f, 0f, 1f, texture, light
                                 };
           vertices.AddRange(backVertices);
 
@@ -100,10 +101,10 @@ namespace Blockland {
 
         case Block.Side.Right:
           float[] rightVertices = {
-                                  x+Block.Size, y, z+Block.Size,            1f, 0f, 0f, 0f, 0f, texture,
-                                  x+Block.Size, y, z,                       1f, 0f, 0f, 1f, 0f, texture,
-                                  x+Block.Size, y+Block.Size, z,            1f, 0f, 0f, 1f, 1f, texture,
-                                  x+Block.Size, y+Block.Size, z+Block.Size, 1f, 0f, 0f, 0f, 1f, texture
+                                  x+Block.Size, y, z+Block.Size,            1f, 0f, 0f, 0f, 0f, texture, light,
+                                  x+Block.Size, y, z,                       1f, 0f, 0f, 1f, 0f, texture, light,
+                                  x+Block.Size, y+Block.Size, z,            1f, 0f, 0f, 1f, 1f, texture, light,
+                                  x+Block.Size, y+Block.Size, z+Block.Size, 1f, 0f, 0f, 0f, 1f, texture, light
                                 };
           vertices.AddRange(rightVertices);
 
@@ -117,10 +118,10 @@ namespace Blockland {
 
         case Block.Side.Left:
           float[] leftVertices = {
-                                  x, y, z,                       -1f, 0f, 0f, 0f, 0f, texture,
-                                  x, y, z+Block.Size,            -1f, 0f, 0f, 1f, 0f, texture,
-                                  x, y+Block.Size, z+Block.Size, -1f, 0f, 0f, 1f, 1f, texture,
-                                  x, y+Block.Size, z,            -1f, 0f, 0f, 0f, 1f, texture
+                                  x, y, z,                       -1f, 0f, 0f, 0f, 0f, texture, light,
+                                  x, y, z+Block.Size,            -1f, 0f, 0f, 1f, 0f, texture, light,
+                                  x, y+Block.Size, z+Block.Size, -1f, 0f, 0f, 1f, 1f, texture, light,
+                                  x, y+Block.Size, z,            -1f, 0f, 0f, 0f, 1f, texture, light
                                 };
           vertices.AddRange(leftVertices);
 
@@ -134,10 +135,10 @@ namespace Blockland {
 
         case Block.Side.Top:
           float[] topVertices = {
-                                  x, y+Block.Size, z+Block.Size,            0f, 1f, 0f, 0f, 0f, texture,
-                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 1f, 0f, 1f, 0f, texture,
-                                  x+Block.Size, y+Block.Size, z,            0f, 1f, 0f, 1f, 1f, texture,
-                                  x, y+Block.Size, z,                       0f, 1f, 0f, 0f, 1f, texture
+                                  x, y+Block.Size, z+Block.Size,            0f, 1f, 0f, 0f, 0f, texture, light,
+                                  x+Block.Size, y+Block.Size, z+Block.Size, 0f, 1f, 0f, 1f, 0f, texture, light,
+                                  x+Block.Size, y+Block.Size, z,            0f, 1f, 0f, 1f, 1f, texture, light,
+                                  x, y+Block.Size, z,                       0f, 1f, 0f, 0f, 1f, texture, light
                                 };
           vertices.AddRange(topVertices);
 
@@ -151,10 +152,10 @@ namespace Blockland {
 
         case Block.Side.Bottom:
           float[] bottomVertices = {
-                                  x+Block.Size, y, z+Block.Size, 0f, -1f, 0f, 0f, 0f, texture,
-                                  x, y, z+Block.Size,            0f, -1f, 0f, 1f, 0f, texture,
-                                  x, y, z,                       0f, -1f, 0f, 1f, 1f, texture,
-                                  x+Block.Size, y, z,            0f, -1f, 0f, 0f, 1f, texture
+                                  x+Block.Size, y, z+Block.Size, 0f, -1f, 0f, 0f, 0f, texture, light,
+                                  x, y, z+Block.Size,            0f, -1f, 0f, 1f, 0f, texture, light,
+                                  x, y, z,                       0f, -1f, 0f, 1f, 1f, texture, light,
+                                  x+Block.Size, y, z,            0f, -1f, 0f, 0f, 1f, texture, light
                                 };
           vertices.AddRange(bottomVertices);
 
@@ -312,27 +313,27 @@ namespace Blockland {
 
         // add sides
         if (front) {
-          AddSide(x, y, z, Block.Side.Front, texture, vertexData, elementData, count);
+          AddSide(x, y, z, Block.Side.Front, texture, vertexData, elementData, count, block.Light);
           count += 4;
         }
         if (back) {
-          AddSide(x, y, z, Block.Side.Back, texture, vertexData, elementData, count);
+          AddSide(x, y, z, Block.Side.Back, texture, vertexData, elementData, count, block.Light);
           count += 4;
         }
         if (right) {
-          AddSide(x, y, z, Block.Side.Right, texture, vertexData, elementData, count);
+          AddSide(x, y, z, Block.Side.Right, texture, vertexData, elementData, count, block.Light);
           count += 4;
         }
         if (left) {
-          AddSide(x, y, z, Block.Side.Left, texture, vertexData, elementData, count);
+          AddSide(x, y, z, Block.Side.Left, texture, vertexData, elementData, count, block.Light);
           count += 4;
         }
         if (top) {
-          AddSide(x, y, z, Block.Side.Top, texture, vertexData, elementData, count);
+          AddSide(x, y, z, Block.Side.Top, texture, vertexData, elementData, count, block.Light);
           count += 4;
         }
         if (bottom) {
-          AddSide(x, y, z, Block.Side.Bottom, texture, vertexData, elementData, count);
+          AddSide(x, y, z, Block.Side.Bottom, texture, vertexData, elementData, count, block.Light);
           count += 4;
         }
       }

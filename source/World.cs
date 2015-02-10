@@ -178,9 +178,10 @@ namespace Blockland {
       chunk.Vertices.CopyData(builtChunk.Vertices, true);
       chunk.Elements.CopyData(builtChunk.Elements, true);
 
-      ShaderProgram.Current.Attribute("inPosition", 3, 9, 0);
-      ShaderProgram.Current.Attribute("inNormal", 3, 9, 3);
-      ShaderProgram.Current.Attribute("inTexCoord", 3, 9, 6);
+      ShaderProgram.Current.Attribute("inPosition", 3, 10, 0);
+      ShaderProgram.Current.Attribute("inNormal", 3, 10, 3);
+      ShaderProgram.Current.Attribute("inTexCoord", 3, 10, 6);
+      ShaderProgram.Current.Attribute("inLight", 1, 10, 9);
     }
 
     #endregion Methods
