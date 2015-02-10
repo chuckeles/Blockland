@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -227,7 +226,7 @@ namespace Blockland {
     /// <summary>
     /// Get queue of chunks to remove.
     /// </summary>
-    public Queue ChunksToRemove {
+    public Queue<Chunk> ChunksToRemove {
       get {
         return mChunksToRemove;
       }
@@ -265,7 +264,7 @@ namespace Blockland {
     /// <summary>
     /// Chunks that need to be processed in the main thread.
     /// </summary>
-    private Queue mChunksToBuildMain = new Queue();
+    private Queue<ChunkBuilder.BuiltChunk> mChunksToBuildMain = new Queue<ChunkBuilder.BuiltChunk>();
 
     /// <summary>
     /// Queue of chunks waiting to be generated.
@@ -275,7 +274,7 @@ namespace Blockland {
     /// <summary>
     /// Queue of chunks to remove.
     /// </summary>
-    private Queue mChunksToRemove = new Queue();
+    private Queue<Chunk> mChunksToRemove = new Queue<Chunk>();
 
     #endregion Fields
 

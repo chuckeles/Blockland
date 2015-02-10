@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 
 namespace Blockland {
@@ -37,7 +36,7 @@ namespace Blockland {
     /// <param name="chunksToBuild">World's queue of chunks to build</param>
     /// <param name="chunksToBuildMain">World's queue of chunks to build in the main thread</param>
     /// <param name="chunks">List of ready chunks</param>
-    public ChunkBuilder(PriorityQueue<Chunk> chunksToBuild, Queue chunksToBuildMain, Dictionary<Vector3i, Chunk> chunks) {
+    public ChunkBuilder(PriorityQueue<Chunk> chunksToBuild, Queue<BuiltChunk> chunksToBuildMain, Dictionary<Vector3i, Chunk> chunks) {
       mChunksToBuild = chunksToBuild;
       mChunksToBuildMain = chunksToBuildMain;
       mChunks = chunks;
@@ -63,7 +62,7 @@ namespace Blockland {
     /// <param name="elementOffset">
     /// How much to offset the side's elements (how much elements there already are)
     /// </param>
-    public void AddSide(float x, float y, float z, Block.Side side, float texture, ArrayList vertices, ArrayList elements, uint elementOffset) {
+    public void AddSide(float x, float y, float z, Block.Side side, float texture, List<float> vertices, List<uint> elements, uint elementOffset) {
       switch (side) {
         case Block.Side.Front:
           float[] frontVertices = {
@@ -180,9 +179,9 @@ namespace Blockland {
     /// <param name="elements">Element array</param>
     private void Build(Chunk chunk, out float[] vertices, out uint[] elements) {
       // list of vertices
-      ArrayList vertexData = new ArrayList();
+      List<float> vertexData = new List<float>();
       // list of elements
-      ArrayList elementData = new ArrayList();
+      List<uint> elementData = new List<uint>();
 
       // neighbor chunks
       Chunk chunkFront;
@@ -339,8 +338,8 @@ namespace Blockland {
       }
 
       // convert to array
-      vertices = vertexData.ToArray(typeof(float)) as float[];
-      elements = elementData.ToArray(typeof(uint)) as uint[];
+      vertices = vertexData.ToArray();
+      elements = elementData.ToArray();
     }
 
     /// <summary>
@@ -394,7 +393,7 @@ namespace Blockland {
     /// <summary>
     /// World's queue of chunks to build in the main thread.
     /// </summary>
-    private Queue mChunksToBuildMain;
+    private Queue<BuiltChunk> mChunksToBuildMain;
 
     #endregion Fields
   }

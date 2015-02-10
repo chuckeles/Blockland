@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -20,7 +19,7 @@ namespace Blockland {
     /// <param name="chunksToRemove">World's queue of chunks to remove.</param>
     /// <param name="renderDistance">Chunk render distance</param>
     /// <param name="height">World's height in chunks</param>
-    public ChunkAllocator(PriorityQueue<Chunk> chunksToGenerate, Dictionary<Vector3i, Chunk> chunks, Queue chunksToRemove, int renderDistance, int height) {
+    public ChunkAllocator(PriorityQueue<Chunk> chunksToGenerate, Dictionary<Vector3i, Chunk> chunks, Queue<Chunk> chunksToRemove, int renderDistance, int height) {
       mChunksToGenerate = chunksToGenerate;
       mChunks = chunks;
       mChunksToRemove = chunksToRemove;
@@ -182,7 +181,7 @@ namespace Blockland {
     /// <summary>
     /// World's queue of chunks to remove.
     /// </summary>
-    private Queue mChunksToRemove;
+    private Queue<Chunk> mChunksToRemove;
 
     /// <summary>
     /// Render distance.

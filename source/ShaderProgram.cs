@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Blockland {
 
@@ -187,7 +187,7 @@ namespace Blockland {
     /// <summary>
     /// List of attached shaders.
     /// </summary>
-    private ArrayList mShaders = new ArrayList();
+    private List<Shader> mShaders = new List<Shader>();
 
     #endregion Fields
   }

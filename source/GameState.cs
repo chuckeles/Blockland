@@ -40,7 +40,7 @@ namespace Blockland {
       Program.Events.OnKeyDown += Escape;
 
       World world = new World();
-      world.Create(8, 8);
+      world.Create(12, 8);
 
       (mCamera["Transform"] as Transform).Move(Chunk.Size * Block.Size / 2, Chunk.Size * Block.Size * 8, Chunk.Size * Block.Size / 2);
     }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Blockland {
@@ -135,7 +135,7 @@ namespace Blockland {
     /// <summary>
     /// Get list of game objects.
     /// </summary>
-    public ArrayList GameObjects {
+    public List<GameObject> GameObjects {
       get {
         return mGameObjects;
       }
@@ -162,7 +162,7 @@ namespace Blockland {
     /// <summary>
     /// List of game objects.
     /// </summary>
-    protected ArrayList mGameObjects = new ArrayList();
+    protected List<GameObject> mGameObjects = new List<GameObject>();
 
     /// <summary>
     /// Current program state.
@@ -172,7 +172,7 @@ namespace Blockland {
     /// <summary>
     /// Queue of program states.
     /// </summary>
-    private static Queue mStates = new Queue();
+    private static Queue<State> mStates = new Queue<State>();
 
     /// <summary>
     /// Whether the state is running.
@@ -182,7 +182,7 @@ namespace Blockland {
     /// <summary>
     /// List of game objects to remove.
     /// </summary>
-    private ArrayList mToRemove = new ArrayList();
+    private List<GameObject> mToRemove = new List<GameObject>();
 
     #endregion Fields
 

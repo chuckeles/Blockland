@@ -171,7 +171,7 @@ namespace Blockland {
 
         Vector2i cameraPosition = new Vector2i((int)(camera.Position.X / (Chunk.Size * Block.Size)), (int)(camera.Position.Z / (Chunk.Size * Block.Size)));
         lock (mChunksToBuild) {
-          mChunksToBuild.Enqueue((int)(new Vector3i(chunk.Position.X - cameraPosition.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z - cameraPosition.Y).Length * 90), chunk);
+          mChunksToBuild.Enqueue((int)(new Vector3i(chunk.Position.X - cameraPosition.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z - cameraPosition.Y).Length * 120), chunk);
         }
       }
     }
