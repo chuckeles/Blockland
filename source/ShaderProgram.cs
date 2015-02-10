@@ -116,13 +116,19 @@ namespace Blockland {
       else if (uniformName == "View")
         mView = matrix;
       else if (uniformName == "Model") {
+        // calculate matrices
         Matrix4 modelView = matrix * mView;
         Matrix4 modelViewProjection = modelView * mProjection;
+        Matrix4 normal = modelView.Inverted();
+        normal.Transpose();
 
-        int uniform = GL.GetUniformLocation(mId, "ModelView");
+        // upload them
+        int uniform = GL.GetUniformLocation(mId, "uModelView");
         GL.UniformMatrix4(uniform, false, ref modelView);
-        uniform = GL.GetUniformLocation(mId, "ModelViewProjection");
+        uniform = GL.GetUniformLocation(mId, "uModelViewProjection");
         GL.UniformMatrix4(uniform, false, ref modelViewProjection);
+        uniform = GL.GetUniformLocation(mId, "uNormal");
+        GL.UniformMatrix4(uniform, false, ref normal);
       }
       else {
         int uniform = GL.GetUniformLocation(mId, uniformName);

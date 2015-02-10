@@ -4,7 +4,7 @@ in vec3 Normal;
 in vec3 TexCoord;
 in float Depth;
 
-uniform sampler2DArray Texture;
+uniform sampler2DArray uTexture;
 
 out vec4 outColor;
 
@@ -16,6 +16,6 @@ void main() {
 
   float light = 0.5 + Normal.x * 0.1 + Normal.y * 0.4 + Normal.z * 0.05;
   
-  vec4 texColor = texture(Texture, TexCoord);
+  vec4 texColor = texture(uTexture, TexCoord);
   outColor = mix(fogColor, texColor * light, pow(e, -pow(Depth * fogDensity, 2)));
 }
