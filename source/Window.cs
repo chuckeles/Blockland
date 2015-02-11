@@ -27,7 +27,7 @@ namespace Blockland {
       mWidth = width;
       mHeight = height;
 
-      mWindow = new NativeWindow((int)width, (int)height, "Blockland", GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default);
+      mWindow = new NativeWindow((int)width, (int)height, "Blockland", GameWindowFlags.Fullscreen, GraphicsMode.Default, DisplayDevice.Default);
       mContext = new GraphicsContext(GraphicsMode.Default, mWindow.WindowInfo, 4, 4, GraphicsContextFlags.Default);
       mContext.MakeCurrent(mWindow.WindowInfo);
       mContext.LoadAll();

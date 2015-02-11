@@ -56,7 +56,7 @@ namespace Blockland {
     /// Generate a chunk.
     /// </summary>
     /// <param name="chunk">Chunk to generate</param>
-    private void Generate(Chunk chunk) {
+    private bool Generate(Chunk chunk) {
       uint generatedBlocks = 0;
 
       // chunk 2D position
@@ -78,10 +78,12 @@ namespace Blockland {
       lock (mWorldLights) {
         if (mWorldLights.ContainsKey(position2d))
           blockLights = mWorldLights[position2d];
-        else {
+        else if (chunk.Position.Y == mHeight - 1) {
           blockLights = new float[Chunk.Size, Chunk.Size];
           mWorldLights[position2d] = blockLights;
         }
+        else
+          return false;
       }
 
       float worldHeight = mHeight * Chunk.Size;
@@ -172,6 +174,8 @@ namespace Blockland {
             ++generatedBlocks;
           }
         }
+
+      return true;
     }
 
     /// <summary>
@@ -194,12 +198,15 @@ namespace Blockland {
           chunk = mChunksToGenerate.Dequeue() as Chunk;
         }
 
-        Generate(chunk);
-
         Vector2i cameraPosition = new Vector2i((int)(camera.Position.X / (Chunk.Size * Block.Size)), (int)(camera.Position.Z / (Chunk.Size * Block.Size)));
-        lock (mChunksToBuild) {
-          mChunksToBuild.Enqueue((int)(new Vector3i(chunk.Position.X - cameraPosition.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z - cameraPosition.Y).Length * 120), chunk);
-        }
+        if (Generate(chunk))
+          lock (mChunksToBuild) {
+            mChunksToBuild.Enqueue((int)(new Vector3i(chunk.Position.X - cameraPosition.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z - cameraPosition.Y).Length * 120), chunk);
+          }
+        else
+          lock (mChunksToGenerate) {
+            mChunksToGenerate.Enqueue((int)(new Vector3i(chunk.Position.X - cameraPosition.X, chunk.Position.Y - mHeight / 2, chunk.Position.Z - cameraPosition.Y).Length * 120), chunk);
+          }
       }
     }
 
